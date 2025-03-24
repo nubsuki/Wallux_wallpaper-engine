@@ -74,7 +74,7 @@ function updateDateTime() {
 
 function updateTimeIcon() {
     const now = new Date();
-    
+
     const hours = now.getHours();
     const moonIcon = document.querySelector('.fa-cloud-moon');
     const sunIcon = document.querySelector('.fa-cloud-sun');
@@ -117,14 +117,37 @@ function showChart() {
         const data = JSON.parse(event.data);
 
         // Update system information
-        document.getElementById("osName").innerText = `OS: ${data.os_name}`;
-        document.getElementById("cpuName").innerText = `CPU: ${data.cpu_name.split(' with ')[0]}`;
-        document.getElementById("ramAmout").innerText = `Memory: ${data.ram_amount}`;
-        document.getElementById("gpuName").innerText = `GPU: ${data.gpu_name}`;
-        document.getElementById("gpuTemp").innerText = `GPU Temp: ${data.gpu_temp}°C`;
-        document.getElementById("netUp").innerText = `netUp: ${data.network_up}MB/s`;
-        document.getElementById("netDown").innerText = `netDown: ${data.network_down}MB/s`;
+        document.getElementById("statsData").innerHTML = `
+        <table>
+        <tr>
+        <td class="stats">HOST: ${data.host_name}</td>
+        <td class="stats">OS: ${data.os_name}</td>
+        </tr>
+        <tr>
+        <td class="stats">Memory: ${data.ram_amount}</td>
+        <td class="stats">CPU: ${data.cpu_name.split(' with ')[0]}</td>
+        </tr>
+        <tr>
+        <td class="stats">GPU: ${data.gpu_name}</td>
+        <td class="stats">GPU Temp: ${data.gpu_temp}°C</td>
+        </tr>
+        <tr>
+        <td class="stats">process: ${data.process_count}</td>
+        <td class="stats">netDown: ${data.top_processes}°C</td>
+        <td class="stats">Health: ${data.health.status}</td>
+<td class="stats">Warning: ${data.health.warnings.join(', ')}</td>
+        </tr>
+        </table>`;
+
+
+        // Update network chart data
+        networkChart.data.datasets[0].data.shift(); // Remove oldest download speed
+        networkChart.data.datasets[1].data.shift(); // Remove oldest upload speed
         
+        networkChart.data.datasets[0].data.push(parseFloat(data.network_down)); // Add new download speed
+        networkChart.data.datasets[1].data.push(parseFloat(data.network_up));   // Add new upload speed
+        
+        networkChart.update('none');
 
         // Update chart data
         currentStats[0].value = parseFloat(data.cpu_usage);    // CPU first
@@ -147,30 +170,30 @@ function showChart() {
 
 // Function to update disk information
 function diskInfo(disks) {
-    
+
     try {
-        if(Array.isArray(disks) && disks.length > 0) {
+        if (Array.isArray(disks) && disks.length > 0) {
             const storageContainer = document.getElementById('storage-container');
             storageContainer.innerHTML = ''; // Clear existing content
-            
+
             // Sort the disks array alphabetically by drive letter
             const sortedDisks = [...disks].sort((a, b) => {
                 const driveA = a.split('::')[0].trim();
                 const driveB = b.split('::')[0].trim();
                 return driveA.localeCompare(driveB);
             });
-            
+
             sortedDisks.forEach((diskString, index) => {
                 const diskInfo = diskString.split('::');
                 if (diskInfo.length === 2) {
                     const [drive, spaceInfo] = diskInfo;
                     const matches = spaceInfo.match(/(\d+\.?\d*)\s*GB\s*\/\s*(\d+\.?\d*)\s*GB/);
-                    
+
                     if (matches) {
                         const used = parseFloat(matches[1]);
                         const total = parseFloat(matches[2]);
-                        const percentage = Math.round((used/total) * 100);
-                        
+                        const percentage = Math.round((used / total) * 100);
+
                         // Create drive container
                         const driveElement = document.createElement('div');
                         driveElement.className = 'drive-info';
@@ -184,7 +207,7 @@ function diskInfo(disks) {
                                 </div>
                             </div>
                         `;
-                        
+
                         storageContainer.appendChild(driveElement);
                     }
                 }
@@ -278,3 +301,67 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
+
+const networkCtx = document.getElementById("networkChart").getContext("2d");
+const networkChart = new Chart(networkCtx, {
+    type: "line",
+    data: {
+        labels: Array(7).fill(""),
+        datasets: [
+            {
+                label: "Download",
+                data: Array(7).fill(0),
+                borderColor: "#2196F3",
+                backgroundColor: "rgba(33, 150, 243, 0.2)",
+                fill: true,
+                tension: 0.4,
+            },
+            {
+                label: "Upload",
+                data: Array(7).fill(0),
+                borderColor: "#FF5722",
+                backgroundColor: "rgba(255, 87, 34, 0.2)",
+                fill: true,
+                tension: 0.4,
+            },
+        ],
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            y: {
+                beginAtZero: true,
+                grid: {
+                    color: "rgba(255, 255, 255, 0.51)",
+                },
+                ticks: {
+                    color: "rgba(255, 255, 255, 0.7)",
+                    callback: function(value) {
+                        return value + ' MB/s';
+                    }
+                }
+            },
+            x: {
+                grid: {
+                    color: "rgba(255, 255, 255, 0.1)",
+                },
+                ticks: {
+                    color: "rgba(255, 255, 255, 0.7)",
+                }
+            }
+        },
+        plugins: {
+            legend: {
+                labels: {
+                    color: "#ffffff",
+                    font: {
+                        size: 10,
+                        family: 'font2',
+                    },
+                },
+                position: 'bottom',
+            }
+        }
+    }
+});

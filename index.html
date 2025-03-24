@@ -28,14 +28,7 @@
             <div class="bar"></div>
         </div>
         <div class="oslayer" id="statsCard">
-            <div class="os" style="display: none;">
-                <div class="stats" id="osName"></div>
-                <div class="stats" id="cpuName"></div>
-                <div class="stats" id="ramAmout"></div>
-                <div class="stats" id="gpuName"></div>
-                <div class="stats" id="gpuTemp"></div>
-                <div class="stats" id="netUp"></div>
-                <div class="stats" id="netDown"></div>
+            <div class="os" style="display: none;" id="statsData">
             </div>
         </div>
         <div class="usage-stats">
@@ -48,6 +41,11 @@
         <div class="storage-container" id="storage-container" style="display: none;">
             <!-- Drives will be dynamically inserted here -->
         </div>
+    </section>
+    <section>
+        <div class="networkChart-container">
+            <canvas id="networkChart"></canvas>
+          </div>
     </section>
     <script src="script.js"></script>
 </body>
