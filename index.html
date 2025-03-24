@@ -14,39 +14,45 @@
     <video autoplay muted loop id="bg-video">
         <source id="video-source" src="Assets/eye.webm" type="video/webm">
     </video>
-    <section class="sysInfomartion">
+    <div class="clock-container">
         <div class="clock">
             <i class="fa-solid fa-cloud-moon"></i>
             <i class="fa-solid fa-cloud-sun"></i>
             <p class="time-text"><span>Loading...</span><span class="time-sub-text">Loading...</span></p>
             <p class="day-text">Loading...</p>
         </div>
-        <div class="loader" id="sysLoader">
-            <div class="bar"></div>
-            <div class="bar"></div>
-            <div class="bar"></div>
-            <div class="bar"></div>
+    </div>
+    <div class="oslayer" id="statsCard">
+        <div class="os" style="display: none;" id="statsData">
         </div>
-        <div class="oslayer" id="statsCard">
-            <div class="os" style="display: none;" id="statsData">
-            </div>
+    </div>
+    <div class="usage-stats">
+        <div class="chart-container" style="display: none;">
+            <canvas id="performanceChart"></canvas>
+            <div class="center-text">USAGE</div>
+            <div class="stats-legend" id="statsLegend"></div>
         </div>
-        <div class="usage-stats">
-            <div class="chart-container" style="display: none;">
-                <canvas id="performanceChart"></canvas>
-                <div class="center-text">USAGE</div>
-                <div class="stats-legend" id="statsLegend"></div>
-            </div>
-        </div>
+    </div>
+    <div class="storage-layer">
         <div class="storage-container" id="storage-container" style="display: none;">
             <!-- Drives will be dynamically inserted here -->
         </div>
-    </section>
-    <section>
-        <div class="networkChart-container">
-            <canvas id="networkChart"></canvas>
-          </div>
-    </section>
+    </div>
+    <div class="process-container">
+        <div class="process-Info" id="process-Info">
+            <!-- process-Info will be dynamically inserted here -->
+        </div>
+    </div>
+    <div class="gpuChart-container">
+        <canvas id="gpuChart">
+            <!-- gpuChart will be dynamically inserted here -->
+        </canvas>
+    </div>
+    <div class="networkChart-container">
+        <canvas id="networkChart">
+            <!-- Network will be dynamically inserted here -->
+        </canvas>
+    </div>
     <script src="script.js"></script>
 </body>
 

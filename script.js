@@ -93,26 +93,17 @@ updateDateTime();
 setInterval(updateDateTime, 1000);
 
 function showChart() {
-    const sysLoader = document.getElementById('sysLoader');
     const chartContainer = document.querySelector('.chart-container');
     const os = document.querySelector('.os');
     const storage = document.getElementById('storage-container');
 
     // Initially show loader and hide chart
-    sysLoader.style.display = 'flex';
-    chartContainer.style.display = 'none';
-    os.style.display = 'none';
-    storage.style.display = 'none';
+    chartContainer.style.display = 'block';
+    os.style.display = 'block';
+    storage.style.display = 'block';
 
     socket.onmessage = (event) => {
-        // After 5 seconds
-        setTimeout(() => {
-            // Hide loader and show chart
-            sysLoader.style.display = 'none';
-            chartContainer.style.display = 'block';
-            os.style.display = 'block';
-            storage.style.display = 'block';
-        }, 5000);
+        
 
         const data = JSON.parse(event.data);
 
@@ -129,11 +120,9 @@ function showChart() {
         </tr>
         <tr>
         <td class="stats">GPU: ${data.gpu_name}</td>
-        <td class="stats">GPU Temp: ${data.gpu_temp}°C</td>
         </tr>
         <tr>
         <td class="stats">process: ${data.process_count}</td>
-        <td class="stats">netDown: ${data.top_processes}°C</td>
         <td class="stats">Health: ${data.health.status}</td>
 <td class="stats">Warning: ${data.health.warnings.join(', ')}</td>
         </tr>
@@ -148,6 +137,11 @@ function showChart() {
         networkChart.data.datasets[1].data.push(parseFloat(data.network_up));   // Add new upload speed
         
         networkChart.update('none');
+
+        // Update GPU temperature chart
+        gpuChart.data.datasets[0].data.shift();
+        gpuChart.data.datasets[0].data.push(parseFloat(data.gpu_temp));
+        gpuChart.update('none');
 
         // Update chart data
         currentStats[0].value = parseFloat(data.cpu_usage);    // CPU first
@@ -165,6 +159,23 @@ function showChart() {
 
         // Update disk information
         diskInfo(data.disks);
+
+
+        document.getElementById("process-Info").innerHTML = `
+        <table class="rwd-table">
+            <tr>
+                <th>PID</th>
+                <th>Name</th>
+                <th>Usage</th>
+            </tr>
+            ${data.top_processes.map(process => `
+                <tr>
+                    <td data-th="PID">${process.pid}</td>
+                    <td data-th="Name">${process.name}</td>
+                    <td data-th="Usage">${process.cpu_usage.toFixed(1)}% | ${(process.memory_usage / (1024 * 1024)).toFixed(1)} MB</td>
+                </tr>
+            `).join('')}
+        </table>`;
     };
 }
 
@@ -302,6 +313,62 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 
+const gpuCtx = document.getElementById('gpuChart').getContext('2d');
+const gpuChart = new Chart(gpuCtx, {
+    type: 'line',
+    data: {
+        labels: Array(7).fill(''),
+        datasets: [{
+            label: 'GPU Temperature',
+            data: Array(7).fill(0),
+            borderColor: 'rgba(255, 255, 255, 0.45)',
+            backgroundColor: "rgba(255, 255, 255, 0.05)",
+            fill: true,
+            tension: 0.4
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            y: {
+                beginAtZero: true,
+                grid: {
+                    color: 'rgba(255, 255, 255, 0.1)'
+                },
+                ticks: {
+                    color: 'rgba(255, 255, 255, 0.47)',
+                    callback: function(value) {
+                        return value + '°C';
+                    }
+                }
+            },
+            x: {
+                grid: {
+                    color: 'rgba(255, 255, 255, 0.1)'
+                },
+                ticks: {
+                    color: 'rgba(255, 255, 255, 0.7)'
+                }
+            }
+        },
+        plugins: {
+            legend: {
+                labels: {
+                    color: '#ffffff',
+                    font: {
+                        size: 10,
+                        family: 'font2'
+                    }
+                },
+                position: 'bottom',
+                align: 'end',
+            }
+        }
+    }
+});
+
+
 const networkCtx = document.getElementById("networkChart").getContext("2d");
 const networkChart = new Chart(networkCtx, {
     type: "line",
@@ -311,16 +378,16 @@ const networkChart = new Chart(networkCtx, {
             {
                 label: "Download",
                 data: Array(7).fill(0),
-                borderColor: "#2196F3",
-                backgroundColor: "rgba(33, 150, 243, 0.2)",
+                borderColor: "rgba(175, 125, 190, 0.36)",
+                backgroundColor: "rgba(255, 255, 255, 0.05)",
                 fill: true,
                 tension: 0.4,
             },
             {
                 label: "Upload",
                 data: Array(7).fill(0),
-                borderColor: "#FF5722",
-                backgroundColor: "rgba(255, 87, 34, 0.2)",
+                borderColor: "rgba(157, 143, 235, 0.36)",
+                backgroundColor: "rgba(255, 255, 255, 0.05)",
                 fill: true,
                 tension: 0.4,
             },
@@ -333,7 +400,7 @@ const networkChart = new Chart(networkCtx, {
             y: {
                 beginAtZero: true,
                 grid: {
-                    color: "rgba(255, 255, 255, 0.51)",
+                    color: "rgba(255, 255, 255, 0.1)",
                 },
                 ticks: {
                     color: "rgba(255, 255, 255, 0.7)",
@@ -358,9 +425,10 @@ const networkChart = new Chart(networkCtx, {
                     font: {
                         size: 10,
                         family: 'font2',
-                    },
+                    }
                 },
                 position: 'bottom',
+                align: 'end',
             }
         }
     }

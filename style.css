@@ -1,7 +1,7 @@
 :root {
-    --color-0: rgb(255, 255, 255);
-    --color-1: rgb(255, 255, 255);
-    --color-2: rgb(255, 255, 255);
+    --color-0: rgba(255, 255, 255, 0.39);
+    --color-1: rgba(184, 163, 241, 0.322);
+    --color-2: rgba(231, 157, 225, 0.26);
 }
 
 @font-face {
@@ -19,7 +19,6 @@
 
 
 body {
-    color: lime;
     font-family: font2;
     text-align: center;
     background-color: #000000;
@@ -118,6 +117,14 @@ body {
 }
 
 /*Clock*/
+
+.clock-container {
+    position: absolute;
+    top: 20%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
 .clock {
     width: 300px;
     height: 150px;
@@ -182,7 +189,10 @@ body {
 .oslayer {
     padding: 10px;
     align-items: center;
-    position: relative;
+    position: absolute;
+    top: 25%;
+    left: 30%;
+    transform: translate(-50%, -50%);
 }
 
 .oslayer table {
@@ -207,6 +217,15 @@ body {
 }
 
 /*Chart for usage stats*/
+.usage-stats {
+    padding: 10px;
+    align-items: center;
+    position: absolute;
+    top: 50%;
+    left: 30%;
+    transform: translate(-50%, -50%);
+}
+
 .chart-container {
     left: 0;
     width: 250px;
@@ -275,6 +294,14 @@ body {
 
 
 /*Storage*/
+.storage-layer{
+    padding: 10px;
+    align-items: center;
+    position: absolute;
+    top: 75%;
+    left: 30%;
+    transform: translate(-50%, -50%);
+}
 .storage-container {
     display: flex;
     flex-direction: column;
@@ -334,15 +361,83 @@ body {
 
 
 
+/*.right-section{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    top: 5%;
+    right: 1%;
+    overflow: auto;
+    flex-direction: column;
+    width: 350px;
+}*/
 
+.process-Info {
+    position: absolute;
+    font-size: 10px;
+    color: #ffffff;
+    width: 500px;
+    background-color: transparent;
+    height: 300px;
+    border: #fdfdfde0 1px solid;
+    overflow: auto; 
+    top: 45%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
 
+.rwd-table {
+    color: #fff;
+    border-radius: .4em;
+    overflow: hidden;
+    width: 100%;
+    margin: 0 auto;
+    text-align: left;
+    table-layout: fixed;
+}
+.rwd-table th:nth-child(1),
+.rwd-table td:nth-child(1) {
+    width: 50px;  /* PID column */
+}
 
+.rwd-table th:nth-child(2),
+.rwd-table td:nth-child(2) {
+    width: 150px;  /* Name column */
+}
 
-.networkChart-container {
-    position: relative;
+.rwd-table th:nth-child(3),
+.rwd-table td:nth-child(3) {
+    width: 60px;  /* Usage column */
+}
+.rwd-table th {
+    padding: 8px;
+}
+
+.rwd-table td {
+    padding: 6px 8px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.gpuChart-container{
+    position: absolute;
     width: 300px;
     height: 150px;
-    background-color: #bededf10;
     margin: 50px auto;
     padding: 20px;
+    top: 70%;
+    right: 10%;
+    transform: translate(-50%, -50%);
+}
+  
+.networkChart-container {
+    position: absolute;
+    width: 300px;
+    height: 150px;
+    margin: 50px auto;
+    padding: 20px;
+    top: 50%;
+    right: 10%;
+    transform: translate(-50%, -50%);
 }
