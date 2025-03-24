@@ -119,7 +119,8 @@ function showChart() {
         <td class="stats">CPU: ${data.cpu_name.split(' with ')[0]}</td>
         </tr>
         <tr>
-        <td class="stats">GPU: ${data.gpu_name}</td>
+        <td class="stats">GPU:</td>
+        <td class="stats">${data.gpu_name}</td>
         </tr>
         <tr>
         <td class="stats">process: ${data.process_count}</td>
