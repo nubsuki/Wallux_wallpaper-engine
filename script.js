@@ -467,7 +467,7 @@ function updateVisualizer(audioArray) {
         cancelAnimationFrame(animationFrameId);
     }
 
-    const barWidth = canvas.width / 32;
+    const barWidth = canvas.width / 64;
     const barSpacing = 2;
     const maxBarHeight = canvas.height - 20;
     const smoothingFactor = 0.3;
@@ -500,7 +500,44 @@ function updateVisualizer(audioArray) {
     animationFrameId = requestAnimationFrame(() => updateVisualizer(audioArray));
 }
 
-// Initialize visualizer when document is loaded
+function sequentialLoad() {
+    const elements = [
+        { el: document.querySelector('.process-Info'), delay: 1000 },
+        { el: document.querySelector('.health-info'), delay: 2500 },
+        { el: document.querySelector('.clock'), delay: 4000 },
+        { el: document.querySelector('.usage-stats'), delay: 5500 },
+        { el: document.querySelector('.networkChart-container'), delay: 7000 },
+        { el: document.querySelector('.gpuChart-container'), delay: 8500 },
+        { el: document.querySelector('.oslayer'), delay: 10000 },
+        { el: document.querySelector('.storage-layer'), delay: 11500 },
+        { el: document.querySelector('.music-visualizer'), delay: 13000 }
+    ];
+
+    // Initially hide all elements
+    elements.forEach(({el}) => {
+        if(el) {
+            el.style.opacity = '0';
+            el.style.display = 'none';
+            el.style.animation = 'none';
+        }
+    });
+
+    // Show elements sequentially
+    elements.forEach(({el, delay}) => {
+        if(el) {
+            setTimeout(() => {
+                el.style.display = 'block';
+                el.style.opacity = '0';
+                
+                void el.offsetWidth;
+
+                el.style.animation = 'tvFlicker 0.8s step-end forwards';
+            }, delay);
+        }
+    });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     initAudioVisualizer();
+    sequentialLoad();
 });
