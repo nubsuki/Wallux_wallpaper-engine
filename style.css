@@ -371,20 +371,6 @@ body {
     transition: width 0.3s ease;
 }
 
-
-
-/*.right-section{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: absolute;
-    top: 5%;
-    right: 1%;
-    overflow: auto;
-    flex-direction: column;
-    width: 350px;
-}*/
-
 .process-Info {
     position: absolute;
     font-size: 10px;
@@ -443,9 +429,10 @@ body {
     height: 65px;
     border: #ffffff 1px solid;
     margin-top: 290px;
-    display: flex;
     flex-direction: column;
-    align-items: start;
+    text-align: start;
+    overflow: hidden;
+    padding: 5px 0;
     
 }
 .process-data .p1{
@@ -457,6 +444,9 @@ body {
     margin: 10px;
     font-size: 10px;
     color: #ffffff;
+    max-width: 480px;
+    word-wrap: break-word;
+    white-space: normal;
 }
 
 .gpuChart-container {
@@ -549,7 +539,7 @@ body {
 
 .music-visualizer {
     position: absolute;
-    bottom: 190px;
+    top: 70%;
     left: 50%;
     transform: translateX(-50%);
     width: 500px;
