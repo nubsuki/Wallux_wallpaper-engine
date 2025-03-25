@@ -122,13 +122,14 @@ function showChart() {
         <td class="stats">GPU:</td>
         <td class="stats">${data.gpu_name}</td>
         </tr>
-        <tr>
-        <td class="stats">process: ${data.process_count}</td>
-        <td class="stats">Health: ${data.health.status}</td>
-<td class="stats">Warning: ${data.health.warnings.join(', ')}</td>
-        </tr>
         </table>`;
 
+        document.getElementById('process-amount').textContent = `Process: ${data.process_count}`;
+
+        // Update health messages
+        document.getElementById('health-mgs').textContent = `System Health: ${data.health.status}`;
+        document.getElementById('warning-mgs').innerHTML = data.health.warnings.length > 0 ? 
+            `<i class="fa-solid fa-triangle-exclamation"></i> ${data.health.warnings.join(', ')}` : '';
 
         // Update network chart data
         networkChart.data.datasets[0].data.shift(); // Remove oldest download speed
