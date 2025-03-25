@@ -148,7 +148,7 @@ body {
     padding: 10px;
     align-items: center;
     position: absolute;
-    bottom: 65%;
+    bottom: 60%;
     left: 30%;
     transform: translatex(-50%);
     animation: tvFlicker 4.5s step-end;
@@ -258,7 +258,7 @@ body {
     padding: 10px;
     align-items: center;
     position: absolute;
-    bottom: 5%;
+    bottom: 10%;
     left: 30%;
     transform: translatex(-50%);
     animation: tvFlicker 4.5s step-end;
@@ -334,7 +334,7 @@ body {
     height: 300px;
     border: #fdfdfde0 1px solid;
     overflow: auto;
-    bottom: 40%;
+    bottom: 43%;
     left: 50%;
     transform: translatex(-50%);
     animation: tvFlicker 4.5s step-end;
@@ -415,10 +415,21 @@ body {
     height: 150px;
     margin: 50px auto;
     padding: 20px;
-    bottom: 5%;
+    bottom: 20%;
     right: 10%;
     transform: translatex(-50%);
     animation: tvFlicker 4.5s step-end;
+}
+.gpuChart-container p {
+    color: #ffffff;
+    position: absolute;
+    top: 0;
+    right: 0;
+    font-size: 10px;
+    margin: 0;
+    width: 300px;
+    height: 25px;
+    text-align: center;
 }
 
 .networkChart-container {
@@ -427,10 +438,21 @@ body {
     height: 150px;
     margin: 50px auto;
     padding: 20px;
-    bottom: 30%;
+    bottom: 40%;
     right: 10%;
     transform: translatex(-50%);
     animation: tvFlicker 4.5s step-end;
+}
+.networkChart-container p {
+    color: #ffffff;
+    position: absolute;
+    top: 0;
+    right: 0;
+    font-size: 10px;
+    margin: 0;
+    width: 300px;
+    height: 25px;
+    text-align: center;
 }
 
 .health-info {
