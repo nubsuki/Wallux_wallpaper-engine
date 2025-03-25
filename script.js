@@ -435,3 +435,72 @@ const networkChart = new Chart(networkCtx, {
         }
     }
 });
+
+
+
+// Audio Visualizer Setup
+let audioContext;
+let analyser;
+let dataArray;
+const canvas = document.getElementById('AudioCanvas');
+const canvasCtx = canvas.getContext('2d');
+
+// Initialize audio visualization
+let previousAudioData = new Float32Array(64).fill(0);
+let animationFrameId;
+
+function initAudioVisualizer() {
+    // Get Wallpaper Engine audio listener
+    window.wallpaperRegisterAudioListener && window.wallpaperRegisterAudioListener((audioArray) => {
+        // audioArray contains the audio data from Wallpaper Engine
+        updateVisualizer(audioArray);
+    });
+
+    // Setup canvas
+    canvas.width = 500;
+    canvas.height = 100;
+    canvasCtx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+}
+
+function updateVisualizer(audioArray) {
+    if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+    }
+
+    const barWidth = canvas.width / 32;
+    const barSpacing = 2;
+    const maxBarHeight = canvas.height - 20;
+    const smoothingFactor = 0.3;
+    const decayRate = 0.98;
+    const amplificationFactor = 6.5; // Amplify the audio signal
+
+    canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
+
+    audioArray.forEach((value, index) => {
+        // Amplify and smooth the audio data
+        const amplifiedValue = Math.min(value * amplificationFactor, 1);
+        previousAudioData[index] = previousAudioData[index] * (1 - smoothingFactor) + amplifiedValue * smoothingFactor;
+        
+        // Apply decay
+        previousAudioData[index] *= decayRate;
+
+        const barHeight = previousAudioData[index] * maxBarHeight;
+        const x = index * (barWidth + barSpacing);
+        const y = canvas.height - barHeight;
+
+        // Create gradient for bars
+        const gradient = canvasCtx.createLinearGradient(0, y, 0, canvas.height);
+        gradient.addColorStop(0, 'rgba(255, 255, 255, 0.8)');
+        gradient.addColorStop(1, 'rgba(255, 255, 255, 0.2)');
+
+        canvasCtx.fillStyle = gradient;
+        canvasCtx.fillRect(x, y, barWidth, barHeight);
+    });
+
+    animationFrameId = requestAnimationFrame(() => updateVisualizer(audioArray));
+}
+
+// Initialize visualizer when document is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    initAudioVisualizer();
+});
