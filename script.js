@@ -2,30 +2,56 @@
 let socket;
 let reconnectInterval;
 
+function updateStartupText(message) {
+    const startupText = document.getElementById('startup-text');
+    const startupScreen = document.querySelector('.startup-screen');
+    if (startupText) {
+        startupText.textContent = message;
+    }
+}
+function showStartupScreen(show) {
+    const startupScreen = document.querySelector('.startup-screen');
+    startupScreen.style.display = show ? 'flex' : 'none';
+}
 function connectWebSocket() {
     socket = new WebSocket("ws://localhost:3069/ws");
+    showStartupScreen(true);
 
     socket.onopen = () => {
-        console.log("Connected to WebSocket server.");
+        updateStartupText("Connected to WebSocket server.");
         // Clear any existing reconnection interval
         if (reconnectInterval) {
             clearInterval(reconnectInterval);
             reconnectInterval = null;
         }
-        showChart();
+        setTimeout(() => {
+            socket.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                updateStartupText(`Welcome ${data.host_name}!`);
+                // Hide startup screen after welcome message
+                setTimeout(() => {
+                    showStartupScreen(false);
+                    setTimeout(() => {
+                        showChart();
+                        sequentialLoad();
+                    }, 100);
+                }, 2000);
+            };
+        }, 5000);
     };
 
     socket.onerror = (error) => {
-        console.error("WebSocket error:", error);
-        // Error will trigger onclose event, so we handle reconnection there
+        showStartupScreen(true);
+        updateStartupText("WebSocket error: Unable to connect to server");
     };
 
+
     socket.onclose = () => {
-        console.log("Disconnected from WebSocket server. Attempting to reconnect...");
-        // Start reconnection attempts if not already trying
+        showStartupScreen(true);
+        updateStartupText("Disconnected from WebSocket server. Attempting to reconnect...");
         if (!reconnectInterval) {
             reconnectInterval = setInterval(() => {
-                console.log("Attempting to reconnect...");
+                updateStartupText("Attempting to reconnect...");
                 connectWebSocket();
             }, 5000);
         }
@@ -34,6 +60,10 @@ function connectWebSocket() {
 
 // Initial connection
 connectWebSocket();
+
+document.addEventListener('DOMContentLoaded', () => {
+    initAudioVisualizer();
+});
 
 function updateDateTime() {
     const now = new Date();
@@ -96,14 +126,24 @@ function showChart() {
     const chartContainer = document.querySelector('.chart-container');
     const os = document.querySelector('.os');
     const storage = document.getElementById('storage-container');
+    const clock = document.querySelector('.clock-container');
+    const process = document.querySelector('.process-container');
+    const musicv = document.querySelector('.music-visualizer');
+    const health = document.querySelector('.health-info');
+    const song = document.querySelector('.songTitle');
 
     // Initially show loader and hide chart
+    clock.style.display = 'block';
+    process.style.display = 'block';
+    musicv.style.display = 'block';
+    health.style.display = 'block';
+    song.style.display = 'block';
     chartContainer.style.display = 'block';
     os.style.display = 'block';
     storage.style.display = 'block';
 
     socket.onmessage = (event) => {
-        
+
 
         const data = JSON.parse(event.data);
 
@@ -126,16 +166,16 @@ function showChart() {
 
         // Update health messages
         document.getElementById('health-mgs').textContent = `System Health: ${data.health.status}`;
-        document.getElementById('warning-mgs').innerHTML = data.health.warnings.length > 0 ? 
+        document.getElementById('warning-mgs').innerHTML = data.health.warnings.length > 0 ?
             `<i class="fa-solid fa-triangle-exclamation"></i> ${data.health.warnings.join(', ')}` : '';
 
         // Update network chart data
         networkChart.data.datasets[0].data.shift(); // Remove oldest download speed
         networkChart.data.datasets[1].data.shift(); // Remove oldest upload speed
-        
+
         networkChart.data.datasets[0].data.push(parseFloat(data.network_down)); // Add new download speed
         networkChart.data.datasets[1].data.push(parseFloat(data.network_up));   // Add new upload speed
-        
+
         networkChart.update('none');
 
         // Update GPU temperature chart
@@ -338,7 +378,7 @@ const gpuChart = new Chart(gpuCtx, {
                 },
                 ticks: {
                     color: 'rgba(255, 255, 255, 0.47)',
-                    callback: function(value) {
+                    callback: function (value) {
                         return value + '°C';
                     }
                 }
@@ -404,7 +444,7 @@ const networkChart = new Chart(networkCtx, {
                 },
                 ticks: {
                     color: "rgba(255, 255, 255, 0.7)",
-                    callback: function(value) {
+                    callback: function (value) {
                         return value + ' MB/s';
                     }
                 }
@@ -461,7 +501,7 @@ function initAudioVisualizer() {
     window.wallpaperRegisterMediaPropertiesListener && window.wallpaperRegisterMediaPropertiesListener((event) => {
         const songName = document.getElementById('songName');
         const songTitle = document.querySelector('.songTitle');
-        
+
         if (event.title) {
             songName.textContent = event.title;
             songTitle.style.display = 'flex';
@@ -505,7 +545,7 @@ function updateVisualizer(audioArray) {
         // Amplify and smooth the audio data
         const amplifiedValue = Math.min(value * amplificationFactor, 1);
         previousAudioData[index] = previousAudioData[index] * (1 - smoothingFactor) + amplifiedValue * smoothingFactor;
-        
+
         // Apply decay
         previousAudioData[index] *= decayRate;
 
@@ -536,12 +576,13 @@ function sequentialLoad() {
         { el: document.querySelector('.gpuChart-container'), delay: 10000 },
         { el: document.querySelector('.oslayer'), delay: 11500 },
         { el: document.querySelector('.storage-layer'), delay: 13000 },
-        { el: document.querySelector('.music-visualizer'), delay: 14500 }
+        { el: document.querySelector('.songTitle'), delay: 14500 },
+        { el: document.querySelector('.music-visualizer'), delay: 16000 }
     ];
 
     // Initially hide all elements
-    elements.forEach(({el}) => {
-        if(el) {
+    elements.forEach(({ el }) => {
+        if (el) {
             el.style.opacity = '0';
             el.style.display = 'none';
             el.style.animation = 'none';
@@ -549,12 +590,12 @@ function sequentialLoad() {
     });
 
     // Show elements sequentially
-    elements.forEach(({el, delay}) => {
-        if(el) {
+    elements.forEach(({ el, delay }) => {
+        if (el) {
             setTimeout(() => {
                 el.style.display = 'block';
                 el.style.opacity = '0';
-                
+
                 void el.offsetWidth;
 
                 el.style.animation = 'tvFlicker 0.8s step-end forwards';
@@ -563,8 +604,4 @@ function sequentialLoad() {
     });
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    initAudioVisualizer();
-    sequentialLoad();
-});
 

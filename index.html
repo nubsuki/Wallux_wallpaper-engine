@@ -11,10 +11,26 @@
 </head>
 
 <body>
+    <div class="startup-screen">
+        <div class="banter-loader">
+            <div class="banter-loader__box"></div>
+            <div class="banter-loader__box"></div>
+            <div class="banter-loader__box"></div>
+            <div class="banter-loader__box"></div>
+            <div class="banter-loader__box"></div>
+            <div class="banter-loader__box"></div>
+            <div class="banter-loader__box"></div>
+            <div class="banter-loader__box"></div>
+            <div class="banter-loader__box"></div>
+          </div>
+          <div class="startup-text">
+            <p id="startup-text"></p>
+          </div>
+    </div>
     <video autoplay muted loop id="bg-video">
-        <source id="video-source" src="Assets/eye.webm" type="video/webm">
+        <source id="video-source" src="assets/eye.webm" type="video/webm">
     </video>
-    <div class="clock-container">
+    <div class="clock-container" style="display: none;">
         <div class="clock">
             <i class="fa-solid fa-cloud-moon"></i>
             <i class="fa-solid fa-cloud-sun"></i>
@@ -33,13 +49,13 @@
             <div class="stats-legend" id="statsLegend"></div>
         </div>
     </div>
-    <div class="storage-layer">
+    <div class="storage-layer" >
         <div class="storage-container" id="storage-container" style="display: none;">
             <!-- Drives will be dynamically inserted here -->
         </div>
     </div>
-    <div class="process-container">
-        <div class="process-Info" id="process-Info">
+    <div class="process-container" style="display: none;">
+        <div class="process-Info" id="process-Info" >
             <!-- process-Info will be dynamically inserted here -->
         </div>
         <div class="process-data" id="process-data">
@@ -47,10 +63,10 @@
             <p class="p2">Filtered:<br>system/svc/service/runtime/ms/win/registry/<br>fontdrvhost/cerss/smss/winint/lsass</p>
         </div>
     </div>
-    <div class="music-visualizer">
+    <div class="music-visualizer"style="display: none;">
         <canvas id="AudioCanvas"></canvas>  
     </div>
-    <div class="health-info">
+    <div class="health-info" style="display: none;">
         <div class="card">
             <div class="status-spinner">
                 <div></div>
@@ -66,19 +82,19 @@
             </div>
         </div>
     </div>
-    <div class="gpuChart-container">
+    <div class="gpuChart-container" style="display: none;">
         <p id="gpuName"></p>
         <canvas id="gpuChart">
             <!-- gpuChart will be dynamically inserted here -->
         </canvas>
     </div>
-    <div class="networkChart-container">
+    <div class="networkChart-container" style="display: none;">
         <p>Network Usage</p>
         <canvas id="networkChart">
             <!-- Network will be dynamically inserted here -->
         </canvas>
     </div>
-    <div class="songTitle">
+    <div class="songTitle" style="display: none;">
         <img src="" alt="Album Art">
         <p id="songName"></p>
     </div>
