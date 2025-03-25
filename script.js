@@ -447,11 +447,38 @@ const canvasCtx = canvas.getContext('2d');
 let previousAudioData = new Float32Array(64).fill(0);
 let animationFrameId;
 
+// Initialize variables for audio metadata
+let currentSongTitle = '';
+let currentSongArtwork = '';
+
 function initAudioVisualizer() {
-    // Get Wallpaper Engine audio listener
+    // Get Wallpaper Engine audio listener for visualizer
     window.wallpaperRegisterAudioListener && window.wallpaperRegisterAudioListener((audioArray) => {
-        // audioArray contains the audio data from Wallpaper Engine
         updateVisualizer(audioArray);
+    });
+
+    // Register media properties listener
+    window.wallpaperRegisterMediaPropertiesListener && window.wallpaperRegisterMediaPropertiesListener((event) => {
+        const songName = document.getElementById('songName');
+        const songTitle = document.querySelector('.songTitle');
+        
+        if (event.title) {
+            songName.textContent = event.title;
+            songTitle.style.display = 'flex';
+        } else {
+            songTitle.style.display = 'none';
+        }
+    });
+
+    // Register media thumbnail listener
+    window.wallpaperRegisterMediaThumbnailListener && window.wallpaperRegisterMediaThumbnailListener((event) => {
+        const songImage = document.querySelector('.songTitle img');
+        if (event.thumbnail) {
+            songImage.src = event.thumbnail;
+            songImage.style.display = 'block';
+        } else {
+            songImage.style.display = 'none';
+        }
     });
 
     // Setup canvas
@@ -540,3 +567,4 @@ document.addEventListener('DOMContentLoaded', () => {
     initAudioVisualizer();
     sequentialLoad();
 });
+

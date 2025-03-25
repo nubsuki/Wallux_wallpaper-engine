@@ -596,6 +596,37 @@ body {
     height: 100%;
 }
 
+.songTitle {
+    position: absolute;
+    bottom: 15%;
+    right: 9%;
+    transform: translatex(-50%);
+    animation: tvFlicker 4.5s step-end;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #ffffff;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    width: 300px;
+}
+
+.songTitle img {
+    width: 60px;
+    height: 60px;
+    border-radius: 5px;
+    object-fit: cover;
+    display: none;
+}
+
+.songTitle p {
+    margin: 0;
+    font-size: 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
 
 @keyframes tvFlicker {
     0% { opacity: 0; }
