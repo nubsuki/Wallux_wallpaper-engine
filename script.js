@@ -1,3 +1,20 @@
+window.wallpaperPropertyListener = {
+    applyUserProperties: function(properties) {
+        if (properties.customvideo) {
+            var videoFile = 'file:///' + properties.customvideo.value;
+
+            // Find the video and source elements
+            var videoElement = document.getElementById('bg-video');
+            var sourceElement = videoElement.getElementsByTagName('source')[0];
+
+            if (videoElement && sourceElement) {
+                sourceElement.src = videoFile;
+                videoElement.load();  // Reload video
+                videoElement.play();  // Start playing
+            }
+        }
+    }
+};
 
 let socket;
 let reconnectInterval;
