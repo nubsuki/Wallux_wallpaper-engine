@@ -47,6 +47,28 @@ function connectWebSocket() {
 
 
     socket.onclose = () => {
+
+        // Hide all elements when disconnected
+        const elements = [
+            '.chart-container',
+            '.os',
+            '#storage-container',
+            '.clock-container',
+            '.process-container',
+            '.music-visualizer',
+            '.health-info',
+            '.songTitle',
+            '.gpuChart-container',
+            '.networkChart-container'
+        ];
+
+        elements.forEach(selector => {
+            const element = document.querySelector(selector);
+            if (element) {
+                element.style.display = 'none';
+            }
+        });
+
         showStartupScreen(true);
         updateStartupText("Disconnected from WebSocket server. Attempting to reconnect...");
         if (!reconnectInterval) {
