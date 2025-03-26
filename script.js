@@ -1,17 +1,23 @@
+
+
+//TO change the background
 window.wallpaperPropertyListener = {
     applyUserProperties: function(properties) {
-        if (properties.customvideo) {
-            var videoFile = 'file:///' + properties.customvideo.value;
+        var videoElement = document.getElementById('bg-video');
+        var sourceElement = videoElement.getElementsByTagName('source')[0];
 
-            // Find the video and source elements
-            var videoElement = document.getElementById('bg-video');
-            var sourceElement = videoElement.getElementsByTagName('source')[0];
-
-            if (videoElement && sourceElement) {
+        if (videoElement && sourceElement) {
+            if (properties.customvideo && properties.customvideo.value) {
+                // If the user has set a video, use it
+                var videoFile = 'file:///' + properties.customvideo.value;
                 sourceElement.src = videoFile;
-                videoElement.load();  // Reload video
-                videoElement.play();  // Start playing
+            } else {
+                // If no video is set, use the default one
+                sourceElement.src = 'default.webm';
             }
+            
+            videoElement.load();  // Reload the video
+            videoElement.play();  // Start playing
         }
     }
 };
