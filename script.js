@@ -613,15 +613,15 @@ function updateVisualizer(audioArray) {
 function sequentialLoad() {
     const elements = [
         { el: document.querySelector('.process-containe'), delay: 1000 },
-        { el: document.querySelector('.health-info'), delay: 4000 },
-        { el: document.querySelector('.clock'), delay: 5500 },
-        { el: document.querySelector('.usage-stats'), delay: 7000 },
-        { el: document.querySelector('.networkChart-container'), delay: 8500 },
-        { el: document.querySelector('.gpuChart-container'), delay: 10000 },
-        { el: document.querySelector('.oslayer'), delay: 11500 },
-        { el: document.querySelector('.storage-layer'), delay: 13000 },
-        { el: document.querySelector('.songTitle'), delay: 14500 },
-        { el: document.querySelector('.music-visualizer'), delay: 16000 }
+        { el: document.querySelector('.health-info'), delay: 2500 },
+        { el: document.querySelector('.clock'), delay: 4000 },
+        { el: document.querySelector('.usage-stats'), delay: 5500 },
+        { el: document.querySelector('.networkChart-container'), delay: 7000 },
+        { el: document.querySelector('.gpuChart-container'), delay: 8500 },
+        { el: document.querySelector('.oslayer'), delay: 10000 },
+        { el: document.querySelector('.storage-layer'), delay: 11500 },
+        { el: document.querySelector('.songTitle'), delay: 13000 },
+        { el: document.querySelector('.music-visualizer'), delay: 14500 }
     ];
 
     // Initially hide all elements
