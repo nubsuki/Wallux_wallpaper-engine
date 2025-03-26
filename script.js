@@ -612,8 +612,7 @@ function updateVisualizer(audioArray) {
 
 function sequentialLoad() {
     const elements = [
-        { el: document.querySelector('.process-Info'), delay: 1000 },
-        { el: document.querySelector('.process-data'), delay: 2500 },
+        { el: document.querySelector('.process-containe'), delay: 1000 },
         { el: document.querySelector('.health-info'), delay: 4000 },
         { el: document.querySelector('.clock'), delay: 5500 },
         { el: document.querySelector('.usage-stats'), delay: 7000 },
@@ -650,3 +649,9 @@ function sequentialLoad() {
 }
 
 
+
+//window.onload = function() {
+   // setTimeout(() => {
+   //     document.querySelector('.clock-container').classList.add('clock-move');
+  //  }, 15000); // Move after 5 seconds
+//};

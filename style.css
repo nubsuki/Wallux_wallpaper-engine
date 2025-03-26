@@ -591,9 +591,9 @@ body {
     position: absolute;
     width: 300px;
     height: 100px;
-    bottom: 70%;
+    bottom: 75%;
     left: 50%;
-    transform: translate(-50%, -50%);
+    transform: translatex(-50%);
 }
 
 .clock {
@@ -837,19 +837,24 @@ body {
     transition: width 0.3s ease;
 }
 
-.process-Info {
+.process-container{
     position: absolute;
+    bottom: 41%;
+    left: 50%;
+    transform: translatex(-50%);
+    animation: tvFlicker 4.5s step-end;
+}
+
+.process-Info {
+    position: relative;
     font-size: 10px;
     color: #ffffff;
     width: 500px;
     background-color: transparent;
     height: 300px;
-    border: #fdfdfde0 1px solid;
+    
     overflow: auto;
-    bottom: 43%;
-    left: 50%;
-    transform: translatex(-50%);
-    animation: tvFlicker 4.5s step-end;
+    
 }
 
 .rwd-table {
@@ -891,35 +896,13 @@ body {
     text-overflow: ellipsis;
 }
 
-.process-data {
-    width: 500px;
-    height: 65px;
-    border: #ffffff 1px solid;
-    margin-top: 290px;
-    flex-direction: column;
+.process-container .p1 {
+    margin: 10px;
+    font-size: 10px;
+    color: #ffffff;
     text-align: start;
-    overflow: hidden;
-    padding: 5px 0;
-    animation: tvFlicker 4.5s step-end;
-
 }
 
-.process-data .p1 {
-    margin: 2px 0 0 10px;
-    font-size: 10px;
-    color: #ffffff;
-}
-
-.process-data .p2 {
-    margin: 4px 0 0 10px;
-    font-size: 10px;
-    color: #ffffff;
-    max-width: 480px;
-    word-wrap: break-word;
-    white-space: normal;
-    line-height: 1.5;
-    text-align: left;
-}
 
 .gpuChart-container {
     position: absolute;
@@ -1112,10 +1095,6 @@ body {
 
 .songTitle {
     position: absolute;
-    bottom: 15%;
-    right: 9%;
-    transform: translatex(-50%);
-    animation: tvFlicker 4.5s step-end;
     display: flex;
     align-items: center;
     gap: 10px;
@@ -1123,7 +1102,11 @@ body {
     padding: 10px;
     border: none;
     border-radius: 5px;
-    width: 300px;
+    width: 500px;
+    bottom: 15%;
+    left: 50%;
+    transform: translateX(-50%);
+    animation: tvFlicker 4.5s step-end;
 }
 
 .songTitle img {
@@ -1179,4 +1162,13 @@ body {
     100% {
         opacity: 1;
     }
+}
+
+
+
+
+.clock-move {
+    bottom: 20%; /* Move it down */
+    left: 80%; /* Move it to the right */
+    transform: translate(-50%, -50%);
 }
