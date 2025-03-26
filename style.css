@@ -57,7 +57,8 @@ body {
 ::-webkit-scrollbar {
     display: none;
 }
-.startup-screen{
+
+.startup-screen {
     position: absolute;
     top: 0;
     left: 0;
@@ -69,12 +70,14 @@ body {
     justify-content: center;
     z-index: 2;
 }
-.startup-text p{
+
+.startup-text p {
     color: #fff;
     font-size: 22px;
     margin-top: 600px;
     font-family: font2;
 }
+
 .banter-loader {
     position: absolute;
     left: 50%;
@@ -606,19 +609,20 @@ body {
     flex-direction: column;
     cursor: default;
     background: none;
-    transition: all 0.3s ease-in-out;
     align-items: center;
     animation: tvFlicker 4.5s step-end;
 }
 
-.clock i {
-    font-size: 25px;
-    color: #ffffff;
+.weather-icon {
+    width: 25px;
+    height: 25px;
     position: absolute;
-    top: 15px;
-    right: 45px;
+    top: 12px;
+    right: 50px;
     animation: neonPulse 1.5s ease-in-out infinite;
+    color: #ffffff;
 }
+
 
 .time-text {
     font-size: 50px;
@@ -660,8 +664,9 @@ body {
     padding: 10px;
     align-items: center;
     position: absolute;
-    bottom: 60%;
-    left: 28.5%;
+    width: 300px;
+    bottom: 63%;
+    left: 30%;
     transform: translatex(-50%);
     animation: tvFlicker 4.5s step-end;
 }
@@ -692,6 +697,7 @@ body {
     padding: 10px;
     align-items: center;
     position: absolute;
+    width: 300px;
     bottom: 35%;
     left: 30%;
     transform: translatex(-50%);
@@ -770,8 +776,9 @@ body {
     padding: 10px;
     align-items: center;
     position: absolute;
+    width: 300px;
     bottom: 10%;
-    left: 30%;
+    left: 29%;
     transform: translatex(-50%);
     animation: tvFlicker 4.5s step-end;
 }
@@ -781,7 +788,7 @@ body {
     flex-direction: column;
     gap: 10px;
     margin-right: 50px;
-    width: 300px;
+    width: 100%;
     overflow: none;
 }
 
@@ -837,12 +844,14 @@ body {
     transition: width 0.3s ease;
 }
 
-.process-container{
+.process-container {
     position: absolute;
     bottom: 41%;
     left: 50%;
     transform: translatex(-50%);
     animation: tvFlicker 4.5s step-end;
+    opacity: 1;
+    transition: opacity 0.5s ease;
 }
 
 .process-Info {
@@ -852,9 +861,9 @@ body {
     width: 500px;
     background-color: transparent;
     height: 300px;
-    
+
     overflow: auto;
-    
+
 }
 
 .rwd-table {
@@ -910,7 +919,7 @@ body {
     height: 150px;
     margin: 50px auto;
     padding: 20px;
-    bottom: 20%;
+    bottom: 15%;
     right: 10%;
     transform: translatex(-50%);
     animation: tvFlicker 4.5s step-end;
@@ -934,7 +943,7 @@ body {
     height: 150px;
     margin: 50px auto;
     padding: 20px;
-    bottom: 40%;
+    bottom: 35%;
     right: 10%;
     transform: translatex(-50%);
     animation: tvFlicker 4.5s step-end;
@@ -955,10 +964,10 @@ body {
 .health-info {
     position: absolute;
     width: 300px;
-    height: 150px;
+    height: 70px;
     margin: 50px auto;
     padding: 20px;
-    bottom: 50%;
+    bottom: 60%;
     right: 10%;
     transform: translatex(-50%);
     animation: tvFlicker 4.5s step-end;
@@ -1086,44 +1095,91 @@ body {
     height: 100px;
     overflow: hidden;
     animation: tvFlicker 4.5s step-end;
+    border-radius: 5px;
 }
 
 .music-visualizer canvas {
     width: 100%;
-    height: 100%;
+    height: 99%;
 }
 
 .songTitle {
     position: absolute;
     display: flex;
-    align-items: center;
     gap: 10px;
-    color: #ffffff;
     padding: 10px;
     border: none;
     border-radius: 5px;
-    width: 500px;
-    bottom: 15%;
+    width: 300px;
+    height: 50px;
+    bottom: 15.5%;
     left: 50%;
     transform: translateX(-50%);
     animation: tvFlicker 4.5s step-end;
 }
 
 .songTitle img {
+    position: absolute;
     width: 60px;
     height: 60px;
+    left: 2px;
+    top: 2.5px;
     border-radius: 5px;
     object-fit: cover;
     display: none;
+    margin-right: 0;
 }
 
 .songTitle p {
-    margin: 0;
+    margin-left: 60px;
     font-size: 10px;
-    text-align: center;
+    color: #ffffff;
+    text-align: left;
     white-space: nowrap;
     overflow: hidden;
+    flex-grow: 1;
+    height: 30px;
+    width: 245px;
     text-overflow: ellipsis;
+}
+
+.btn-proc {
+    position: absolute;
+    bottom: 4%;
+    right: 0%;
+    transform: translateX(-50%);
+}
+
+.btn-proc a {
+    color: rgba(255, 255, 255, 0.308);
+    padding: 5px 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.397);
+    overflow: hidden;
+    font-size: 0.9rem;
+    font-weight: 600;
+    gap: 8px;
+    border-radius: 5px;
+    margin: 0 5px;
+    transition: 0.2s;
+    border: 1px solid transparent;
+}
+
+.btn-proc a:hover {
+    border-color: rgba(255, 255, 255, 0.404);
+    background: linear-gradient(to bottom,
+            rgba(255, 255, 255, 0.144),
+            rgba(255, 255, 255, 0.247),
+            rgba(255, 255, 255, 0.39));
+    box-shadow: 0 6px rgba(255, 255, 255, 0.623);
+    transform: translateY(-6px);
+}
+
+.btn-proc a:active {
+    transform: translateY(2px);
+    box-shadow: none;
 }
 
 @keyframes tvFlicker {
@@ -1168,7 +1224,60 @@ body {
 
 
 .clock-move {
-    bottom: 20%; /* Move it down */
-    left: 80%; /* Move it to the right */
-    transform: translate(-50%, -50%);
+    bottom: 85%;
+    left: 9.5%;
+    transform: translatex(-50%);
+    transition: all 0.8s ease-in-out;
+}
+
+.oslayer-move {
+    bottom: 70%;
+    left: 10%;
+    transform: translatex(-50%);
+    transition: all 0.8s ease-in-out;
+}
+
+.usage-stats-move {
+    bottom: 45%;
+    left: 10%;
+    transform: translatex(-50%);
+    transition: all 0.8s ease-in-out;
+}
+
+.storage-layer-move {
+    bottom: 2%;
+    left: 9%;
+    transform: translatex(-50%);
+    transition: all 0.8s ease-in-out;
+}
+
+.health-info-move {
+    bottom: 17%;
+    left: 35.3%;
+    transform: translatex(-50%);
+    transition: all 0.8s ease-in-out;
+}
+
+.gpuChart-container-move {
+    bottom: 22%;
+    right: 73%;
+    transform: translatex(-50%);
+    transition: all 0.8s ease-in-out;
+}
+
+.networkChart-container-move {
+    bottom: -2%;
+    right: 56%;
+    transform: translatex(-50%);
+    transition: all 0.8s ease-in-out;
+}
+
+.clock-container,
+.oslayer,
+.usage-stats,
+.storage-layer,
+.health-info,
+.gpuChart-container,
+.networkChart-container {
+    transition: all 0.8s ease-in-out;
 }

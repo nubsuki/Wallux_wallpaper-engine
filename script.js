@@ -2,7 +2,7 @@
 
 //TO change the background
 window.wallpaperPropertyListener = {
-    applyUserProperties: function(properties) {
+    applyUserProperties: function (properties) {
         var videoElement = document.getElementById('bg-video');
         var sourceElement = videoElement.getElementsByTagName('source')[0];
 
@@ -15,9 +15,19 @@ window.wallpaperPropertyListener = {
                 // If no video is set, use the default one
                 sourceElement.src = 'default.webm';
             }
-            
+
             videoElement.load();  // Reload the video
             videoElement.play();  // Start playing
+        }
+        
+        // Handle element movement setting
+        if (properties.enablemovement !== undefined) {
+            window.enableElementMovement = properties.enablemovement.value;
+        }
+
+        // Handle audio amplification setting
+        if (properties.audioamplification !== undefined) {
+            window.audioAmplificationFactor = properties.audioamplification.value;
         }
     }
 };
@@ -151,8 +161,8 @@ function updateTimeIcon() {
     const now = new Date();
 
     const hours = now.getHours();
-    const moonIcon = document.querySelector('.fa-cloud-moon');
-    const sunIcon = document.querySelector('.fa-cloud-sun');
+    const moonIcon = document.querySelector('.moon');
+    const sunIcon = document.querySelector('.sun');
 
     // Show sun icon between 6 AM and 6 PM (6-18), moon icon otherwise
     if (hours >= 6 && hours < 18) {
@@ -582,7 +592,7 @@ function updateVisualizer(audioArray) {
     const maxBarHeight = canvas.height - 20;
     const smoothingFactor = 0.3;
     const decayRate = 0.98;
-    const amplificationFactor = 6.5; // Amplify the audio signal
+    const amplificationFactor = window.audioAmplificationFactor || 6.5; // Amplify the audio signal
 
     canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -633,6 +643,9 @@ function sequentialLoad() {
         }
     });
 
+    // Get the maximum delay
+    const maxDelay = Math.max(...elements.map(item => item.delay));
+
     // Show elements sequentially
     elements.forEach(({ el, delay }) => {
         if (el) {
@@ -646,12 +659,67 @@ function sequentialLoad() {
             }, delay);
         }
     });
+    setTimeout(() => {
+        if (window.enableElementMovement !== false) {
+            updateLocation();
+        }
+        // Hide process container after 5 seconds
+        const processContainer = document.querySelector('.process-container');
+        if (processContainer) {
+            processContainer.style.opacity = '0';
+            setTimeout(() => {
+                processContainer.style.display = 'none';
+            }, 500);
+        }
+    }, maxDelay + 1000);
 }
 
 
+function updateLocation() {
+    const moveElements = [
+        { el: '.clock-container', delay: 0, class: 'clock-move' },
+        { el: '.oslayer', delay: 500, class: 'oslayer-move' },
+        { el: '.usage-stats', delay: 1000, class: 'usage-stats-move' },
+        { el: '.storage-layer', delay: 1500, class: 'storage-layer-move' },
+        { el: '.health-info', delay: 2000, class: 'health-info-move' },
+        { el: '.gpuChart-container', delay: 2500, class: 'gpuChart-container-move' },
+        { el: '.networkChart-container', delay: 3000, class: 'networkChart-container-move' }
+    ];
 
-//window.onload = function() {
-   // setTimeout(() => {
-   //     document.querySelector('.clock-container').classList.add('clock-move');
-  //  }, 15000); // Move after 5 seconds
-//};
+    moveElements.forEach(({ el, delay, class: className }) => {
+        const element = document.querySelector(el);
+        if (element) {
+            setTimeout(() => {
+                // Setup initial transition
+                element.style.transition = 'all 0.8s ease-in-out';
+
+                // Wait for fade out to complete
+                setTimeout(() => {
+                    // Add move class
+                    element.classList.add(className);
+
+                    
+                }, 800);
+            }, delay);
+        }
+    });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const btnProc = document.querySelector('.btn-proc');
+    const processContainer = document.querySelector('.process-container');
+
+    btnProc.addEventListener('click', () => {
+        if (processContainer.style.display === 'none') {
+            processContainer.style.display = 'block';
+            setTimeout(() => {
+                processContainer.style.opacity = '1';
+            }, 10);
+        } else {
+            processContainer.style.opacity = '0';
+            setTimeout(() => {
+                processContainer.style.display = 'none';
+            }, 500);
+        }
+    });
+});
