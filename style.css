@@ -69,13 +69,16 @@ body {
     display: flex;
     justify-content: center;
     z-index: 2;
+    transition: all 0.8s ease-in-out;
 }
 
 .startup-text p {
     color: #fff;
-    font-size: 22px;
-    margin-top: 600px;
+    font-size: 10px;
+    margin-top: 900px;
     font-family: font2;
+    text-align: center;
+    align-items: center;
 }
 
 .banter-loader {
@@ -86,6 +89,7 @@ body {
     height: 72px;
     margin-left: -36px;
     margin-top: -36px;
+    
 }
 
 .banter-loader__box {
@@ -1112,8 +1116,8 @@ body {
     border-radius: 5px;
     width: 300px;
     height: 50px;
-    bottom: 15.5%;
-    left: 50%;
+    bottom: 5%;
+    right: 11.5%;
     transform: translateX(-50%);
     animation: tvFlicker 4.5s step-end;
 }
@@ -1252,8 +1256,8 @@ body {
 }
 
 .health-info-move {
-    bottom: 17%;
-    left: 35.3%;
+    bottom: 10.2%;
+    left: 29.5%;
     transform: translatex(-50%);
     transition: all 0.8s ease-in-out;
 }
