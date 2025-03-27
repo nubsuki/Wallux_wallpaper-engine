@@ -1260,7 +1260,7 @@ body {
 }
 
 .storage-layer-move {
-    bottom: 2%;
+    bottom: 4%;
     left: 9%;
     transform: translatex(-50%);
     transition: all 0.8s ease-in-out;
