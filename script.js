@@ -14,13 +14,7 @@ window.wallpaperPropertyListener = {
                     sourceElement.src = videoFile;
                 } else {
                     // If no video is set, use the default one
-                    if (properties.defaultvideo !== undefined) {
-                        // Use default.webm or default2.webm based on user preference
-                        sourceElement.src = properties.defaultvideo.value ? 'default.webm' : 'default2.webm';
-                    } else {
-                        // Fallback to default2.webm if no preference is set
-                        sourceElement.src = 'default2.webm';
-                    }
+                    sourceElement.src = 'default.webm';
                 }
     
                 videoElement.load();  // Reload the video
