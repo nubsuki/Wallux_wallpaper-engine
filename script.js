@@ -7,17 +7,25 @@ window.wallpaperPropertyListener = {
         var sourceElement = videoElement.getElementsByTagName('source')[0];
 
         if (videoElement && sourceElement) {
-            if (properties.customvideo && properties.customvideo.value) {
-                // If the user has set a video, use it
-                var videoFile = 'file:///' + properties.customvideo.value;
-                sourceElement.src = videoFile;
-            } else {
-                // If no video is set, use the default one
-                sourceElement.src = 'default.webm';
+            if (properties.customvideo) {
+                if (properties.customvideo.value) {
+                    // If the user has set a video, use it
+                    var videoFile = 'file:///' + properties.customvideo.value;
+                    sourceElement.src = videoFile;
+                } else {
+                    // If no video is set, use the default one
+                    if (properties.defaultvideo !== undefined) {
+                        // Use default.webm or default2.webm based on user preference
+                        sourceElement.src = properties.defaultvideo.value ? 'default.webm' : 'default2.webm';
+                    } else {
+                        // Fallback to default2.webm if no preference is set
+                        sourceElement.src = 'default2.webm';
+                    }
+                }
+    
+                videoElement.load();  // Reload the video
+                videoElement.play();  // Start playing
             }
-
-            videoElement.load();  // Reload the video
-            videoElement.play();  // Start playing
         }
         
         // Handle element movement setting
@@ -28,6 +36,12 @@ window.wallpaperPropertyListener = {
         // Handle audio amplification setting
         if (properties.audioamplification !== undefined) {
             window.audioAmplificationFactor = properties.audioamplification.value;
+        }
+
+        // Handle blur setting
+        if (properties.backgroundblur !== undefined) {
+            const blurAmount = properties.backgroundblur.value;
+            videoElement.style.filter = `blur(${blurAmount}px)`;
         }
     }
 };
@@ -118,6 +132,7 @@ connectWebSocket();
 
 document.addEventListener('DOMContentLoaded', () => {
     initAudioVisualizer();
+    initParallaxEffect();
 });
 
 function updateDateTime() {
@@ -723,3 +738,18 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+
+function initParallaxEffect() {
+    const video = document.getElementById('bg-video');
+    const parallaxStrength = 0.02; // Adjust this value to control movement intensity
+    const scale = 1.2; // Match the CSS scale value
+
+    document.addEventListener('mousemove', (e) => {
+        const mouseX = e.clientX / window.innerWidth - 0.5;
+        const mouseY = e.clientY / window.innerHeight - 0.5;
+
+        requestAnimationFrame(() => {
+            video.style.transform = `translate(-50%, -50%) translate(${mouseX * 20}px, ${mouseY * 20}px) scale(${scale})`;
+        });
+    });
+}
