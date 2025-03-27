@@ -4,8 +4,8 @@ A dynamic wallpaper for wallpaper engine that provides real-time system monitori
 
 This project is a dynamic wallpaper for Wallpaper Engine that provides real-time system statistics, offering a sci-fi experience that goes beyond simple animated wallpapers.
 
-
-[![Wallux](https://img.youtube.com/vi/VRLvY5bjuP8/maxresdefault.jpg)](https://youtu.be/VRLvY5bjuP8)
+## Demo and Quick-guide
+[![YouTube](https://img.youtube.com/vi/VRLvY5bjuP8/maxresdefault.jpg)](https://youtu.be/VRLvY5bjuP8)
 
 ## Features
 
@@ -33,9 +33,9 @@ Background-wallpapers from [Moewalls](https://moewalls.com/).
 
 1. Download the latest release from [NekoFrame](https://github.com/nubsuki/Nekoframe) page.
 2. Install NekoFrame and run it.
-3. Download wallpaper from Wallpaper Engine: [Wallux](https://steamcommunity.com/sharedfiles/filedetails/?id=3452928639).
-  - Steam :[Wallux](https://steamcommunity.com/sharedfiles/filedetails/?id=3453056882).
-  
+3. Download wallpaper from Wallpaper Engine: [Wallux](https://steamcommunity.com/sharedfiles/filedetails/?id=3453056882).
+
 That's it!
+
 
 **Note:** If WebSocket is not working, open NekoFrame from taskbar hidden icons and click "Test".
