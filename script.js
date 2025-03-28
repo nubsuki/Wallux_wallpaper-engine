@@ -613,10 +613,10 @@ function updateVisualizer(audioArray) {
 
     const barWidth = canvas.width / 64;
     const barSpacing = 2;
-    const maxBarHeight = canvas.height - 20;
+    const maxBarHeight = canvas.height - 10;
     const smoothingFactor = 0.3;
     const decayRate = 0.98;
-    const amplificationFactor = window.audioAmplificationFactor || 6.5; // Amplify the audio signal
+    const amplificationFactor = window.audioAmplificationFactor || 5; // Amplify the audio signal
 
     canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -635,7 +635,7 @@ function updateVisualizer(audioArray) {
         // Create gradient for bars
         const gradient = canvasCtx.createLinearGradient(0, y, 0, canvas.height);
         gradient.addColorStop(0, 'rgba(255, 255, 255, 0.8)');
-        gradient.addColorStop(1, 'rgba(255, 255, 255, 0.2)');
+        gradient.addColorStop(1, 'rgba(255, 255, 255, 0.05)');
 
         canvasCtx.fillStyle = gradient;
         canvasCtx.fillRect(x, y, barWidth, barHeight);
