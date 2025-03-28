@@ -1287,6 +1287,12 @@ body {
     transition: all 0.8s ease-in-out;
 }
 
+.networkChart-container-nodetect-move {
+    bottom: 22%;
+    right: 73%;
+    transform: translatex(-50%);
+    transition: all 0.8s ease-in-out;
+}
 .clock-container,
 .oslayer,
 .usage-stats,

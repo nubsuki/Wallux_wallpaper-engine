@@ -16,12 +16,12 @@ window.wallpaperPropertyListener = {
                     // If no video is set, use the default one
                     sourceElement.src = 'default.webm';
                 }
-    
+
                 videoElement.load();  // Reload the video
                 videoElement.play();  // Start playing
             }
         }
-        
+
         // Handle element movement setting
         if (properties.enablemovement !== undefined) {
             window.enableElementMovement = properties.enablemovement.value;
@@ -195,6 +195,8 @@ function showChart() {
     const musicv = document.querySelector('.music-visualizer');
     const health = document.querySelector('.health-info');
     const song = document.querySelector('.songTitle');
+    const gpuContainer = document.querySelector('.gpuChart-container');
+    const networkContainer = document.querySelector('.networkChart-container');
 
     // Initially show loader and hide chart
     clock.style.display = 'block';
@@ -210,6 +212,19 @@ function showChart() {
 
 
         const data = JSON.parse(event.data);
+
+        // Check GPU detection
+        const hasGPU = data.gpu_name && 
+                      data.gpu_usage !== undefined && 
+                      data.gpu_temp !== undefined &&
+                      data.gpu_name !== "GPU not found";
+
+        // Handle GPU container visibility 
+        if (!hasGPU) {
+            gpuContainer.style.display = 'none';
+        } else {
+            gpuContainer.style.display = 'block';
+        }
 
         // Update system information
         document.getElementById("statsData").innerHTML = `
@@ -250,7 +265,7 @@ function showChart() {
         // Update chart data
         currentStats[0].value = parseFloat(data.cpu_usage);    // CPU first
         currentStats[1].value = parseFloat(data.ram_usage);    // RAM second
-        currentStats[2].value = parseFloat(data.gpu_usage);   // GPU last
+        currentStats[2].value = hasGPU ? parseFloat(data.gpu_usage) : 0;   // GPU last
 
         // Update chart
         chart.data.datasets = currentStats.map((stat, index) =>
@@ -670,7 +685,9 @@ function sequentialLoad() {
     });
     setTimeout(() => {
         if (window.enableElementMovement !== false) {
-            updateLocation();
+            const gpuContainer = document.querySelector('.gpuChart-container');
+            const hasGPU = gpuContainer && gpuContainer.style.display !== 'none';
+            updateLocation(hasGPU);
         }
         // Hide process container after 5 seconds
         const processContainer = document.querySelector('.process-container');
@@ -684,16 +701,17 @@ function sequentialLoad() {
 }
 
 
-function updateLocation() {
-    const moveElements = [
-        { el: '.clock-container', delay: 0, class: 'clock-move' },
-        { el: '.oslayer', delay: 500, class: 'oslayer-move' },
-        { el: '.usage-stats', delay: 1000, class: 'usage-stats-move' },
-        { el: '.storage-layer', delay: 1500, class: 'storage-layer-move' },
-        { el: '.health-info', delay: 2000, class: 'health-info-move' },
-        { el: '.gpuChart-container', delay: 2500, class: 'gpuChart-container-move' },
-        { el: '.networkChart-container', delay: 3000, class: 'networkChart-container-move' }
-    ];
+function updateLocation(hasGPU) {
+
+        const moveElements = [
+            { el: '.clock-container', delay: 0, class: 'clock-move' },
+            { el: '.oslayer', delay: 500, class: 'oslayer-move' },
+            { el: '.usage-stats', delay: 1000, class: 'usage-stats-move' },
+            { el: '.storage-layer', delay: 1500, class: 'storage-layer-move' },
+            { el: '.health-info', delay: 2000, class: 'health-info-move' },
+            { el: '.gpuChart-container', delay: 2500, class: hasGPU ? 'gpuChart-container-move' : '' },
+            { el: '.networkChart-container', delay: 3000, class: hasGPU ? 'networkChart-container-move' : 'networkChart-container-nodetect-move' }
+        ];
 
     moveElements.forEach(({ el, delay, class: className }) => {
         const element = document.querySelector(el);
