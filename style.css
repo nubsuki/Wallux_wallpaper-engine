@@ -982,8 +982,8 @@ body {
     height: 70px;
     margin: 50px auto;
     padding: 20px;
-    bottom: 60%;
-    right: 10%;
+    bottom: 58%;
+    right: 13.5%;
     transform: translatex(-50%);
     animation: tvFlicker 4.5s step-end;
 }
