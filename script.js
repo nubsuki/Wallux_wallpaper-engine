@@ -121,6 +121,8 @@ function revealDashboard() {
     const netWidget = document.getElementById("network-widget");
     const diskContainer = document.getElementById("disk-container");
 
+    const musicVizElem = document.getElementById("music-visualizer");
+
     // Reveal containers
     if (clockWidget) clockWidget.style.display = "flex";
     if (procWidget) procWidget.style.display = "flex";
@@ -130,6 +132,7 @@ function revealDashboard() {
     }
     if (healthWidgetElem) healthWidgetElem.style.display = "flex";
     if (netWidget) netWidget.style.display = "flex";
+    if (musicVizElem) musicVizElem.style.display = "flex";
 
     startMatrixTelemetryScanner();
 
@@ -141,6 +144,7 @@ function revealDashboard() {
       healthDiagRow,
       netWidget,
       diskContainer,
+      musicVizElem,
     ].filter(Boolean);
 
     // Pre-reset elements
@@ -195,6 +199,8 @@ function connectWebSocket() {
     if (healthWidget) healthWidget.style.display = "none";
     const netWidget = document.getElementById("network-widget");
     if (netWidget) netWidget.style.display = "none";
+    const musicViz = document.getElementById("music-visualizer");
+    if (musicViz) musicViz.style.display = "none";
     const panels = document.querySelectorAll(".hud-panel");
     panels.forEach((p) => p.classList.remove("flicker-in"));
     startupScreen.style.display = "flex";
@@ -650,13 +656,12 @@ let lastDrawTime = 0;
 let visualizerData = null;
 
 function initAudioVisualizer() {
-  canvas.width = 400;
-  canvas.height = 60;
+  canvas.width = 440;
+  canvas.height = 48;
 
   window.wallpaperRegisterAudioListener &&
     window.wallpaperRegisterAudioListener((audioArray) => {
       visualizerData = audioArray;
-      document.getElementById("music-visualizer").style.display = "flex";
     });
 
   window.wallpaperRegisterMediaPropertiesListener &&
@@ -702,10 +707,10 @@ function renderVisualizer(timestamp) {
 
   canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
 
-  // Create gradient once
+  // Pure glowing neon white gradient
   const gradient = canvasCtx.createLinearGradient(0, 0, 0, canvas.height);
-  gradient.addColorStop(0, "rgba(168, 85, 247, 0.9)"); // Purple
-  gradient.addColorStop(1, "rgba(56, 189, 248, 0.3)"); // Blue
+  gradient.addColorStop(0, "rgba(255, 255, 255, 0.95)");
+  gradient.addColorStop(1, "rgba(255, 255, 255, 0.25)");
   canvasCtx.fillStyle = gradient;
 
   for (let i = 0; i < 64; i++) {
