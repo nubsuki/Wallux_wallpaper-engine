@@ -116,6 +116,9 @@ function revealDashboard() {
         const healthWidget = document.getElementById('health-widget');
         if (healthWidget) healthWidget.style.display = 'flex';
 
+        const netWidget = document.getElementById('network-widget');
+        if (netWidget) netWidget.style.display = 'flex';
+
         startMatrixTelemetryScanner();
 
         // Staggered tube light flicker-in for all HUD panels
@@ -162,6 +165,8 @@ function connectWebSocket() {
         if (procWidget) procWidget.style.display = 'none';
         const healthWidget = document.getElementById('health-widget');
         if (healthWidget) healthWidget.style.display = 'none';
+        const netWidget = document.getElementById('network-widget');
+        if (netWidget) netWidget.style.display = 'none';
         const panels = document.querySelectorAll('.hud-panel');
         panels.forEach(p => p.classList.remove('flicker-in'));
         startupScreen.style.display = 'flex';
@@ -316,6 +321,99 @@ function processNekoframeData(data) {
         if (valRam) valRam.textContent = `${usedGb.toFixed(1)} / ${totalGb.toFixed(0)} GB`;
         updateHazardStripes('stripes-ram', ramPercent);
         telemetryState.ram = ramPercent;
+    }
+
+    // Network Metrics (Download & Upload)
+    if (data.network) {
+        const dlKbps = data.network.download_kbps || 0;
+        const upKbps = data.network.upload_kbps || 0;
+
+        const formatNetSpeed = (kbps) => {
+            const val = kbps || 0;
+            if (val >= 1024 * 1024) {
+                return (val / (1024 * 1024)).toFixed(1) + ' GB/s';
+            }
+            if (val >= 1024) {
+                return (val / 1024).toFixed(1) + ' MB/s';
+            }
+            return Math.round(val) + ' KB/s';
+        };
+
+        const netDlSpeed = document.getElementById('net-dl-speed');
+        if (netDlSpeed) netDlSpeed.textContent = formatNetSpeed(dlKbps);
+
+        const netUpSpeed = document.getElementById('net-up-speed');
+        if (netUpSpeed) netUpSpeed.textContent = formatNetSpeed(upKbps);
+
+        const dlTriangles = document.getElementById('net-dl-triangles');
+        const upTriangles = document.getElementById('net-up-triangles');
+
+        if (dlTriangles) {
+            if (dlKbps > 5) {
+                dlTriangles.classList.add('active');
+                const dur = Math.max(0.2, (0.7 - Math.min(dlKbps / 5000, 0.5))).toFixed(2) + 's';
+                dlTriangles.querySelectorAll('.dl-poly').forEach(p => p.style.animationDuration = dur);
+            } else {
+                dlTriangles.classList.remove('active');
+            }
+        }
+
+        if (upTriangles) {
+            if (upKbps > 5) {
+                upTriangles.classList.add('active');
+                const dur = Math.max(0.2, (0.7 - Math.min(upKbps / 5000, 0.5))).toFixed(2) + 's';
+                upTriangles.querySelectorAll('.up-poly').forEach(p => p.style.animationDuration = dur);
+            } else {
+                upTriangles.classList.remove('active');
+            }
+        }
+    }
+
+    // Disk Telemetry
+    if (data.disks && data.disks.length > 0) {
+        const diskContainer = document.getElementById('disk-container');
+        if (diskContainer) {
+            diskContainer.innerHTML = data.disks.slice(0, 3).map((d, i) => {
+                const used = d.used_gb ? d.used_gb.toFixed(1) : '0';
+                const total = d.total_gb ? d.total_gb.toFixed(0) : '0';
+                const pct = Math.min(100, Math.max(0, Math.round(d.usage_percent || (d.total_gb > 0 ? (d.used_gb / d.total_gb) * 100 : 0))));
+                const driveLetter = (d.name || `C:`).toUpperCase().replace(/\\$/, '');
+                
+                // Check direct temp or correlate with data.storage sensor
+                let temp = d.temp_celsius;
+                if ((temp === undefined || temp === null) && data.storage && data.storage[i]) {
+                    temp = data.storage[i].temp_celsius;
+                }
+                const tabTemp = (temp !== undefined && temp !== null && temp > 0)
+                    ? `<span class="disk-tab-temp">${Math.round(temp)}°C</span>`
+                    : '';
+
+                return `
+                <div class="disk-card" id="disk-card-${i}">
+                    <div class="disk-header-row">
+                        <span class="disk-title">DISK <span class="disk-name">${driveLetter}</span></span>
+                        <span class="disk-val">${used} / ${total} GB</span>
+                    </div>
+                    <div class="disk-stepped-track">
+                        <svg class="disk-shape-svg" viewBox="0 0 160 22" preserveAspectRatio="none">
+                            <defs>
+                                <clipPath id="disk-clip-${i}">
+                                    <path d="M 0 6 L 6 0 L 52 0 L 64 8 L 152 8 L 160 14 L 160 22 L 0 22 Z" />
+                                </clipPath>
+                            </defs>
+                            <path class="disk-shape-bg" d="M 0 6 L 6 0 L 52 0 L 64 8 L 152 8 L 160 14 L 160 22 L 0 22 Z" />
+                            <g clip-path="url(#disk-clip-${i})">
+                                <rect class="disk-shape-fill" x="0" y="0" width="${pct}%" height="22" />
+                            </g>
+                            <path class="disk-shape-border" d="M 0 6 L 6 0 L 52 0 L 64 8 L 152 8 L 160 14 L 160 22 L 0 22 Z" />
+                        </svg>
+                        <span class="disk-tab-text">${driveLetter} ${tabTemp}</span>
+                        <span class="disk-percent-text">${pct}%</span>
+                    </div>
+                </div>
+                `;
+            }).join('');
+        }
     }
 
     // Process List

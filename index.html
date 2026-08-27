@@ -224,6 +224,67 @@
         </div>
     </div>
 
+    <!-- Network Speed Widget (Stacked: Download -> Triangles -> Upload) -->
+    <div class="network-widget hud-panel" id="network-widget" style="display: none;">
+        <div class="net-stack-container">
+            <!-- Top Row: Download -->
+            <div class="net-row net-row-dl">
+                <span class="net-lbl">Download</span>
+                <span class="net-val" id="net-dl-speed">0 KB/s</span>
+            </div>
+
+            <!-- Middle Row: Full-Width Interlocking Triangles Band (16 Pairs) -->
+            <div class="net-interlock-band">
+                <svg class="net-interlock-svg" viewBox="0 0 198 20">
+                    <!-- Top 16 Downward Triangles (Download) -->
+                    <g class="net-dl-triangles" id="net-dl-triangles">
+                        <polygon class="dl-poly dl-1" points="0,1 10,1 5,10" />
+                        <polygon class="dl-poly dl-2" points="12,1 22,1 17,10" />
+                        <polygon class="dl-poly dl-3" points="24,1 34,1 29,10" />
+                        <polygon class="dl-poly dl-4" points="36,1 46,1 41,10" />
+                        <polygon class="dl-poly dl-5" points="48,1 58,1 53,10" />
+                        <polygon class="dl-poly dl-6" points="60,1 70,1 65,10" />
+                        <polygon class="dl-poly dl-7" points="72,1 82,1 77,10" />
+                        <polygon class="dl-poly dl-8" points="84,1 94,1 89,10" />
+                        <polygon class="dl-poly dl-9" points="96,1 106,1 101,10" />
+                        <polygon class="dl-poly dl-10" points="108,1 118,1 113,10" />
+                        <polygon class="dl-poly dl-11" points="120,1 130,1 125,10" />
+                        <polygon class="dl-poly dl-12" points="132,1 142,1 137,10" />
+                        <polygon class="dl-poly dl-13" points="144,1 154,1 149,10" />
+                        <polygon class="dl-poly dl-14" points="156,1 166,1 161,10" />
+                        <polygon class="dl-poly dl-15" points="168,1 178,1 173,10" />
+                        <polygon class="dl-poly dl-16" points="180,1 190,1 185,10" />
+                    </g>
+                    <!-- Bottom 16 Upward Triangles (Upload) -->
+                    <g class="net-up-triangles" id="net-up-triangles">
+                        <polygon class="up-poly up-1" points="6,19 11,10 16,19" />
+                        <polygon class="up-poly up-2" points="18,19 23,10 28,19" />
+                        <polygon class="up-poly up-3" points="30,19 35,10 40,19" />
+                        <polygon class="up-poly up-4" points="42,19 47,10 52,19" />
+                        <polygon class="up-poly up-5" points="54,19 59,10 64,19" />
+                        <polygon class="up-poly up-6" points="66,19 71,10 76,19" />
+                        <polygon class="up-poly up-7" points="78,19 83,10 88,19" />
+                        <polygon class="up-poly up-8" points="90,19 95,10 100,19" />
+                        <polygon class="up-poly up-9" points="102,19 107,10 112,19" />
+                        <polygon class="up-poly up-10" points="114,19 119,10 124,19" />
+                        <polygon class="up-poly up-11" points="126,19 131,10 136,19" />
+                        <polygon class="up-poly up-12" points="138,19 143,10 148,19" />
+                        <polygon class="up-poly up-13" points="150,19 155,10 160,19" />
+                        <polygon class="up-poly up-14" points="162,19 167,10 172,19" />
+                        <polygon class="up-poly up-15" points="174,19 179,10 184,19" />
+                        <polygon class="up-poly up-16" points="186,19 191,10 196,19" />
+                    </g>
+                </svg>
+            </div>
+
+            <!-- Bottom Row: Upload -->
+            <div class="net-row net-row-up">
+                <span class="net-lbl">Upload</span>
+                <span class="net-val" id="net-up-speed">0 KB/s</span>
+            </div>
+        </div>
+    </div>
+
     <!-- System Health Widget: Right Side of Processes -->
     <div class="health-widget hud-panel" id="health-widget" style="display: none;">
         <div class="diag-graphic-row">
@@ -302,6 +363,35 @@
                 <span id="health-vertical-text">SYSTEM: HEALTHY</span>
             </div>
 
+        </div>
+
+        <!-- Disk Telemetry Module (Bottom of Health Widget) -->
+        <div class="disk-container" id="disk-container">
+            <div class="disk-card" id="disk-card-0">
+                <div class="disk-header-row">
+                    <span class="disk-title">DISK <span class="disk-name" id="disk-name-0">C:</span></span>
+                    <span class="disk-val" id="disk-val-0">-- / -- GB</span>
+                </div>
+                <div class="disk-stepped-track">
+                    <svg class="disk-shape-svg" viewBox="0 0 160 22" preserveAspectRatio="none">
+                        <defs>
+                            <clipPath id="disk-clip-0">
+                                <path d="M 0 6 L 6 0 L 52 0 L 64 8 L 152 8 L 160 14 L 160 22 L 0 22 Z" />
+                            </clipPath>
+                        </defs>
+                        <!-- Background track -->
+                        <path class="disk-shape-bg" d="M 0 6 L 6 0 L 52 0 L 64 8 L 152 8 L 160 14 L 160 22 L 0 22 Z" />
+                        <!-- Progress Fill Bar -->
+                        <g clip-path="url(#disk-clip-0)">
+                            <rect class="disk-shape-fill" id="disk-fill-0" x="0" y="0" width="0%" height="22" />
+                        </g>
+                        <!-- Stepped Outline Border -->
+                        <path class="disk-shape-border" d="M 0 6 L 6 0 L 52 0 L 64 8 L 152 8 L 160 14 L 160 22 L 0 22 Z" />
+                    </svg>
+                    <span class="disk-tab-text" id="disk-tab-0">C:</span>
+                    <span class="disk-percent-text" id="disk-pct-0">0%</span>
+                </div>
+            </div>
         </div>
     </div>
 
