@@ -117,10 +117,8 @@ function revealDashboard() {
     const procWidget = document.getElementById("process-widget");
     const metricsWidgetElem = document.getElementById("metrics-widget");
     const healthWidgetElem = document.getElementById("health-widget");
-    const healthDiagRow = document.getElementById("health-diag-row");
     const netWidget = document.getElementById("network-widget");
     const diskContainer = document.getElementById("disk-container");
-
     const musicVizElem = document.getElementById("music-visualizer");
 
     // Reveal containers
@@ -132,16 +130,18 @@ function revealDashboard() {
     }
     if (healthWidgetElem) healthWidgetElem.style.display = "flex";
     if (netWidget) netWidget.style.display = "flex";
+    if (diskContainer) diskContainer.style.display = "flex";
     if (musicVizElem) musicVizElem.style.display = "flex";
 
     startMatrixTelemetryScanner();
 
     // Exact ignition order:
+    // 1. Clock -> 2. Process -> 3. Metrics -> 4. Health Matrix -> 5. Network -> 6. Disk -> 7. Audio Visualizer
     const ignitionSequence = [
       clockWidget,
       procWidget,
       metricsWidgetElem,
-      healthDiagRow,
+      healthWidgetElem,
       netWidget,
       diskContainer,
       musicVizElem,
@@ -151,6 +151,7 @@ function revealDashboard() {
     ignitionSequence.forEach((elem) => {
       elem.style.opacity = "0";
       elem.classList.remove("flicker-in");
+      elem.classList.remove("hud-deployed");
     });
 
     // Trigger staggered tube light flicker in exact order
@@ -162,6 +163,27 @@ function revealDashboard() {
         120 + index * 420,
       );
     });
+
+    // Modules to deploy in sequential flight order:
+    // 1. Clock -> 2. Metrics -> 3. Disks -> 4. Network -> 5. Health Matrix
+    const deploymentSequence = [
+      clockWidget,
+      metricsWidgetElem,
+      diskContainer,
+      netWidget,
+      healthWidgetElem,
+    ].filter(Boolean);
+
+    // Wait ~1s after all modules finish igniting, then move them sequentially one-by-one
+    const totalIgnitionTime = 120 + (ignitionSequence.length - 1) * 420 + 950;
+    setTimeout(() => {
+      deploymentSequence.forEach((elem, idx) => {
+        setTimeout(() => {
+          elem.classList.add("hud-deployed");
+        }, idx * 280);
+      });
+    }, totalIgnitionTime);
+
   }, 800);
 }
 
@@ -199,10 +221,15 @@ function connectWebSocket() {
     if (healthWidget) healthWidget.style.display = "none";
     const netWidget = document.getElementById("network-widget");
     if (netWidget) netWidget.style.display = "none";
+    const diskContainer = document.getElementById("disk-container");
+    if (diskContainer) diskContainer.style.display = "none";
     const musicViz = document.getElementById("music-visualizer");
     if (musicViz) musicViz.style.display = "none";
     const panels = document.querySelectorAll(".hud-panel");
-    panels.forEach((p) => p.classList.remove("flicker-in"));
+    panels.forEach((p) => {
+      p.classList.remove("flicker-in");
+      p.classList.remove("hud-deployed");
+    });
     startupScreen.style.display = "flex";
     setTimeout(() => (startupScreen.style.opacity = "1"), 10);
     updateStartupText("Disconnected. Attempting to reconnect...");
@@ -679,11 +706,14 @@ function initAudioVisualizer() {
   window.wallpaperRegisterMediaThumbnailListener &&
     window.wallpaperRegisterMediaThumbnailListener((event) => {
       const img = document.getElementById("song-image");
-      if (event.thumbnail) {
-        img.src = event.thumbnail;
-        img.style.display = "block";
-      } else {
-        img.style.display = "none";
+      if (img) {
+        if (event && event.thumbnail) {
+          img.src = event.thumbnail;
+          img.style.display = "block";
+        } else {
+          img.removeAttribute("src");
+          img.style.display = "none";
+        }
       }
     });
 

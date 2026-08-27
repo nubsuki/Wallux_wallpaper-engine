@@ -417,12 +417,19 @@ body {
 
 .banter-loader__box:nth-child(9) { animation: moveBox-9 4s infinite; }
 
-/* --- HUD Panel Base (No Backgrounds, No Borders) --- */
+/* --- HUD Panel Base & Kinetic Smooth Flight Transition --- */
 .hud-panel {
     background: transparent;
     border: none;
     box-shadow: none;
     clip-path: none;
+    transition: top 1.2s cubic-bezier(0.16, 1, 0.3, 1),
+                left 1.2s cubic-bezier(0.16, 1, 0.3, 1),
+                right 1.2s cubic-bezier(0.16, 1, 0.3, 1),
+                bottom 1.2s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 1.2s cubic-bezier(0.16, 1, 0.3, 1),
+                padding 1.2s cubic-bezier(0.16, 1, 0.3, 1),
+                opacity 0.8s ease;
 }
 
 .hud-panel.flicker-in {
@@ -508,35 +515,44 @@ body {
     100% { box-shadow: 0 0 20px rgba(239, 68, 68, 0.5); }
 }
 
-/* Metrics Widget (CPU, GPU, RAM - Left of Processes) */
+/* Metrics Widget (CPU, GPU, RAM - Initial Boot & Deployed) */
 .metrics-widget {
     position: absolute;
     top: calc(50% - 160px);
-    right: calc(50% + 245px);
+    left: calc(50% - 415px);
     width: 170px;
     display: flex;
     flex-direction: column;
     gap: 20px;
-    transition: opacity 0.8s ease;
     z-index: 50;
 }
 
-/* System Health Diagnostic Widget (Right of Processes) */
+.metrics-widget.hud-deployed {
+    top: 130px;
+    left: 30px;
+}
+
+/* System Health Diagnostic Widget (Right of Processes -> Lower Right Flank) */
 .health-widget {
     position: absolute;
     top: calc(50% - 160px);
     left: calc(50% + 245px);
-    width: 170px;
+    width: auto;
     display: flex;
     flex-direction: column;
     gap: 20px;
     user-select: none;
     z-index: 50;
-    transition: opacity 0.8s ease;
     background: transparent;
     border: none;
     box-shadow: none;
     padding: 0;
+}
+
+.health-widget.hud-deployed {
+    top: calc(50% + 220px);
+    left: calc(50% + 245px);
+    transform: none;
 }
 
 /* Matrix HUD & Telemetry Dots */
@@ -618,12 +634,22 @@ body {
     text-transform: uppercase;
 }
 
-/* Disk Telemetry Module (Bottom of Health Widget) */
+/* Disk Telemetry Module */
 .disk-container {
+    position: absolute;
+    top: calc(50% - 15px);
+    left: calc(50% + 245px);
     display: flex;
     flex-direction: column;
     gap: 10px;
     width: 170px;
+    z-index: 50;
+    user-select: none;
+}
+
+.disk-container.hud-deployed {
+    top: 350px;
+    left: 30px;
 }
 
 .disk-card {
@@ -749,11 +775,24 @@ body {
     top: calc(50% - 270px);
     left: 50%;
     transform: translateX(-50%);
-    padding: 16px 36px;
+    padding: 0;
     z-index: 50;
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+.clock-widget.hud-deployed {
+    top: 30px;
+    left: 30px;
+    transform: none;
+    align-items: flex-start;
+    justify-content: flex-start;
+}
+
+.clock-widget.hud-deployed .time-block {
+    align-items: flex-start;
+    text-align: left;
 }
 
 .clock-widget .time-block {
@@ -1043,13 +1082,17 @@ body {
 .network-widget {
     position: absolute;
     top: calc(50% + 55px);
-    right: calc(50% + 245px);
+    left: calc(50% - 415px);
     width: 170px;
     display: flex;
     flex-direction: column;
     z-index: 50;
     user-select: none;
-    transition: opacity 0.8s ease;
+}
+
+.network-widget.hud-deployed {
+    top: 510px;
+    left: 30px;
 }
 
 .net-stack-container {
@@ -1270,6 +1313,11 @@ body {
     height: 32px;
     border-radius: 4px;
     box-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
+}
+
+#song-info img[src=""],
+#song-info img:not([src]) {
+    display: none !important;
 }
 
 #song-info p,

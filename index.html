@@ -286,8 +286,8 @@
     </div>
 
     <!-- System Health Widget: Right Side of Processes -->
-    <div class="health-widget" id="health-widget" style="display: none;">
-        <div class="diag-graphic-row hud-panel" id="health-diag-row">
+    <div class="health-widget hud-panel" id="health-widget" style="display: none;">
+        <div class="diag-graphic-row" id="health-diag-row">
 
             <!-- Cyber Data Matrix (Paired 2x2 Sub-Quads from Reference Image) -->
             <div class="cyber-data-matrix" id="cyber-matrix">
@@ -364,34 +364,34 @@
             </div>
 
         </div>
+    </div>
 
-        <!-- Disk Telemetry Module (Bottom of Health Widget) -->
-        <div class="disk-container hud-panel" id="disk-container">
-            <div class="disk-card" id="disk-card-0">
-                <div class="disk-header-row">
-                    <span class="disk-title">DISK <span class="disk-name" id="disk-name-0">C:</span></span>
-                    <span class="disk-val" id="disk-val-0">-- / -- GB</span>
-                </div>
-                <div class="disk-stepped-track">
-                    <svg class="disk-shape-svg" viewBox="0 0 160 22" preserveAspectRatio="none">
-                        <defs>
-                            <clipPath id="disk-clip-0">
-                                <path d="M 0 6 L 6 0 L 52 0 L 64 8 L 152 8 L 160 14 L 160 22 L 0 22 Z" />
-                            </clipPath>
-                        </defs>
-                        <!-- Background track -->
-                        <path class="disk-shape-bg" d="M 0 6 L 6 0 L 52 0 L 64 8 L 152 8 L 160 14 L 160 22 L 0 22 Z" />
-                        <!-- Progress Fill Bar -->
-                        <g clip-path="url(#disk-clip-0)">
-                            <rect class="disk-shape-fill" id="disk-fill-0" x="0" y="0" width="0%" height="22" />
-                        </g>
-                        <!-- Stepped Outline Border -->
-                        <path class="disk-shape-border"
-                            d="M 0 6 L 6 0 L 52 0 L 64 8 L 152 8 L 160 14 L 160 22 L 0 22 Z" />
-                    </svg>
-                    <span class="disk-tab-text" id="disk-tab-0">C:</span>
-                    <span class="disk-percent-text" id="disk-pct-0">0%</span>
-                </div>
+    <!-- Disk Telemetry Module -->
+    <div class="disk-container hud-panel" id="disk-container" style="display: none;">
+        <div class="disk-card" id="disk-card-0">
+            <div class="disk-header-row">
+                <span class="disk-title">DISK <span class="disk-name" id="disk-name-0">C:</span></span>
+                <span class="disk-val" id="disk-val-0">-- / -- GB</span>
+            </div>
+            <div class="disk-stepped-track">
+                <svg class="disk-shape-svg" viewBox="0 0 160 22" preserveAspectRatio="none">
+                    <defs>
+                        <clipPath id="disk-clip-0">
+                            <path d="M 0 6 L 6 0 L 52 0 L 64 8 L 152 8 L 160 14 L 160 22 L 0 22 Z" />
+                        </clipPath>
+                    </defs>
+                    <!-- Background track -->
+                    <path class="disk-shape-bg" d="M 0 6 L 6 0 L 52 0 L 64 8 L 152 8 L 160 14 L 160 22 L 0 22 Z" />
+                    <!-- Progress Fill Bar -->
+                    <g clip-path="url(#disk-clip-0)">
+                        <rect class="disk-shape-fill" id="disk-fill-0" x="0" y="0" width="0%" height="22" />
+                    </g>
+                    <!-- Stepped Outline Border -->
+                    <path class="disk-shape-border"
+                        d="M 0 6 L 6 0 L 52 0 L 64 8 L 152 8 L 160 14 L 160 22 L 0 22 Z" />
+                </svg>
+                <span class="disk-tab-text" id="disk-tab-0">C:</span>
+                <span class="disk-percent-text" id="disk-pct-0">0%</span>
             </div>
         </div>
     </div>
@@ -399,7 +399,7 @@
     <!-- Music Visualizer (Overlay) -->
     <div class="music-visualizer hud-panel" id="music-visualizer" style="display: none;">
         <div class="song-info" id="song-info" style="display: none;">
-            <img id="song-image" src="" alt="">
+            <img id="song-image" src="" alt="" style="display: none;">
             <p id="song-name"></p>
         </div>
         <canvas id="AudioCanvas"></canvas>
