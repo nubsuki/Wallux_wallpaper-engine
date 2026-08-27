@@ -7,9 +7,6 @@
     <title>Wallux</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Michroma&family=Orbitron:wght@400;600;800;900&family=Oxanium:wght@400;600;700;800&display=swap" rel="stylesheet">
 </head>
 
 <body>
@@ -107,14 +104,14 @@
             <!-- Processes injected here -->
         </div>
         <div class="proc-total-footer">
-            <span>Process: </span><span id="process-count">0</span>
+            <span>Operations: </span><span id="process-count">0</span>
         </div>
     </div>
 
     <!-- Metrics Widget: CPU, GPU, RAM Mecha Banners -->
     <div class="metrics-widget" id="metrics-widget" style="display: none;">
         <div class="mecha-metrics-stack">
-            
+
             <!-- CPU Banner Card -->
             <div class="mecha-card hud-panel" id="metric-cpu-card">
                 <div class="mecha-main-row">
@@ -160,7 +157,8 @@
                     <div class="gpu-fan-body">
                         <div class="gpu-fan-housings">
                             <div class="fan-housing">
-                                <svg class="fan-turbine-svg" id="gpu-fan-blade-1" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <svg class="fan-turbine-svg" id="gpu-fan-blade-1" viewBox="0 0 100 100" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
                                     <circle cx="50" cy="50" r="10" fill="#ffffff" />
                                     <g stroke="#ffffff" stroke-width="5" stroke-linecap="round">
                                         <path d="M 50 38 C 50 22 66 12 78 14" />
@@ -175,7 +173,8 @@
                                 </svg>
                             </div>
                             <div class="fan-housing">
-                                <svg class="fan-turbine-svg" id="gpu-fan-blade-2" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <svg class="fan-turbine-svg" id="gpu-fan-blade-2" viewBox="0 0 100 100" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
                                     <circle cx="50" cy="50" r="10" fill="#ffffff" />
                                     <g stroke="#ffffff" stroke-width="5" stroke-linecap="round">
                                         <path d="M 50 38 C 50 22 66 12 78 14" />
@@ -228,7 +227,7 @@
     <!-- System Health Widget: Right Side of Processes -->
     <div class="health-widget hud-panel" id="health-widget" style="display: none;">
         <div class="diag-graphic-row">
-            
+
             <!-- Cyber Data Matrix (Paired 2x2 Sub-Quads from Reference Image) -->
             <div class="cyber-data-matrix" id="cyber-matrix">
                 <div class="matrix-pair">
