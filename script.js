@@ -846,6 +846,17 @@ function initProcessToggle() {
   });
 }
 
+// --- Dynamic Display Resolution Scaling (1080p, 2K, 4K & Ultrawide) ---
+function applyDynamicResolutionScale() {
+  const baseHeight = 1080;
+  // Compute scale based on viewport height
+  const scale = Math.max(0.6, window.innerHeight / baseHeight);
+  document.documentElement.style.zoom = scale;
+}
+
+window.addEventListener("resize", applyDynamicResolutionScale);
+applyDynamicResolutionScale();
+
 // Boot
 initAudioVisualizer();
 initProcessToggle();
