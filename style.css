@@ -532,10 +532,10 @@ body {
     left: 30px;
 }
 
-/* System Health Diagnostic Widget (Right of Processes -> Lower Right Flank) */
+/* System Health Diagnostic Widget (Right of Processes -> Fixed Bottom Offset) */
 .health-widget {
     position: absolute;
-    top: calc(50% - 160px);
+    bottom: calc(50% + 25px);
     left: calc(50% + 245px);
     width: auto;
     display: flex;
@@ -550,7 +550,7 @@ body {
 }
 
 .health-widget.hud-deployed {
-    top: calc(50% + 220px);
+    bottom: 30px;
     left: calc(50% + 245px);
     transform: none;
 }
