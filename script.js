@@ -1,767 +1,465 @@
-
-
-//TO change the background
+// --- Wallpaper Engine Properties ---
 window.wallpaperPropertyListener = {
     applyUserProperties: function (properties) {
         var videoElement = document.getElementById('bg-video');
-        var sourceElement = videoElement.getElementsByTagName('source')[0];
 
-        if (videoElement && sourceElement) {
-            if (properties.customvideo) {
-                if (properties.customvideo.value) {
-                    // If the user has set a video, use it
-                    var videoFile = 'file:///' + properties.customvideo.value;
-                    sourceElement.src = videoFile;
-                } else {
-                    // If no video is set, use the default one
-                    sourceElement.src = 'default.webm';
-                }
-
-                videoElement.load();  // Reload the video
-                videoElement.play();  // Start playing
+        if (properties.customvideo && properties.customvideo.value) {
+            var path = properties.customvideo.value;
+            if (!path.startsWith('file:///')) {
+                path = 'file:///' + path;
             }
+            videoElement.src = path;
+            videoElement.load();
+            videoElement.play().catch(function(e) { console.log("Video autoplay caught:", e); });
         }
 
-        // Handle element movement setting
-        if (properties.enablemovement !== undefined) {
-            window.enableElementMovement = properties.enablemovement.value;
-        }
-
-        // Handle audio amplification setting
         if (properties.audioamplification !== undefined) {
             window.audioAmplificationFactor = properties.audioamplification.value;
         }
 
-        // Handle blur setting
         if (properties.backgroundblur !== undefined) {
-            const blurAmount = properties.backgroundblur.value;
-            videoElement.style.filter = `blur(${blurAmount}px)`;
+            videoElement.style.filter = `blur(${properties.backgroundblur.value}px)`;
         }
     }
 };
 
+// --- Core State & DOM ---
 let socket;
 let reconnectInterval;
+const metricsWidget = document.getElementById('metrics-widget');
+const startupScreen = document.getElementById('startup-screen');
+const startupText = document.getElementById('startup-text');
+const healthBanner = document.getElementById('health-banner');
+const healthMessage = document.getElementById('health-message');
 
 function updateStartupText(message) {
-    const startupText = document.getElementById('startup-text');
-    const startupScreen = document.querySelector('.startup-screen');
     if (startupText) {
-        startupText.textContent = message;
+        startupText.classList.remove('text-glitch');
+        void startupText.offsetWidth; // Trigger reflow for animation restart
+        startupText.textContent = message.toUpperCase();
+        startupText.classList.add('text-glitch');
     }
 }
-function showStartupScreen(show) {
-    const startupScreen = document.querySelector('.startup-screen');
-    startupScreen.style.display = show ? 'flex' : 'none';
+
+// --- WebSocket Connection & Boot Sequence ---
+let hasBooted = false;
+
+function bootSequence() {
+    updateStartupText("Loading system...");
+    setTimeout(() => {
+        updateStartupText("Initializing HUD components...");
+        setTimeout(() => {
+            updateStartupText("Establishing secure connection...");
+            setTimeout(() => {
+                updateStartupText("Waiting for Nekoframe...");
+                setTimeout(() => {
+                    connectWebSocket();
+                }, 1500);
+            }, 1500);
+        }, 1500);
+    }, 1500);
 }
+
+// --- Active Telemetry Metrics Cache & Matrix Scanner ---
+let telemetryState = {
+    cpu: 10,
+    gpu: 5,
+    ram: 40,
+    maxTemp: 45
+};
+
+let matrixScannerInterval = null;
+
+function startMatrixTelemetryScanner() {
+    if (matrixScannerInterval) return;
+    
+    matrixScannerInterval = setInterval(() => {
+        const matrix = document.getElementById('cyber-matrix');
+        if (!matrix) return;
+        const dots = matrix.querySelectorAll('.m-dot');
+        if (!dots || dots.length === 0) return;
+
+        // Activity ratio powered by all 3 metrics: CPU (45%), GPU (35%), RAM (20%)
+        const activityRatio = Math.min(Math.max((telemetryState.cpu * 0.45 + telemetryState.gpu * 0.35 + telemetryState.ram * 0.20) / 100, 0.12), 0.96);
+
+        dots.forEach((dot) => {
+            // Chance of dot being active is directly tied to the 3 combined metrics
+            const isLit = Math.random() < activityRatio;
+            if (isLit) {
+                dot.classList.add('active');
+                // Organic micro-fluctuation brightness
+                dot.style.opacity = (0.75 + Math.random() * 0.25).toFixed(2);
+            } else {
+                dot.classList.remove('active');
+                dot.style.opacity = '0.15';
+            }
+        });
+    }, 130);
+}
+
+function revealDashboard() {
+    startupScreen.style.opacity = '0';
+    setTimeout(() => {
+        startupScreen.style.display = 'none';
+        if (metricsWidget) {
+            metricsWidget.style.display = 'flex';
+            metricsWidget.style.opacity = '1';
+            metricsWidget.style.pointerEvents = 'all';
+        }
+
+        const clockWidget = document.getElementById('clock-widget');
+        if (clockWidget) clockWidget.style.display = 'flex';
+
+        const procWidget = document.getElementById('process-widget');
+        if (procWidget) procWidget.style.display = 'flex';
+
+        const healthWidget = document.getElementById('health-widget');
+        if (healthWidget) healthWidget.style.display = 'flex';
+
+        startMatrixTelemetryScanner();
+
+        // Staggered tube light flicker-in for all HUD panels
+        const panels = document.querySelectorAll('.hud-panel');
+        panels.forEach((p, i) => {
+            p.style.opacity = '0';
+            p.classList.remove('flicker-in');
+            setTimeout(() => {
+                p.classList.add('flicker-in');
+            }, 80 + (i * 180));
+        });
+    }, 800);
+}
+
+let dataStreamReady = false;
+
 function connectWebSocket() {
     socket = new WebSocket("ws://localhost:3069/ws");
-    showStartupScreen(true);
-
+    
     socket.onopen = () => {
-        updateStartupText("Connected to WebSocket server.");
-        // Clear any existing reconnection interval
+        updateStartupText("Data stream active...");
+        setTimeout(() => {
+            dataStreamReady = true;
+        }, 1500);
+
         if (reconnectInterval) {
             clearInterval(reconnectInterval);
             reconnectInterval = null;
         }
-        setTimeout(() => {
-            socket.onmessage = (event) => {
-                const data = JSON.parse(event.data);
-                updateStartupText(`Welcome ${data.host_name}!`);
-                // Hide startup screen after welcome message
-                setTimeout(() => {
-                    showStartupScreen(false);
-                    setTimeout(() => {
-                        showChart();
-                        sequentialLoad();
-                    }, 100);
-                }, 2000);
-            };
-        }, 5000);
     };
 
-    socket.onerror = (error) => {
-        showStartupScreen(true);
-        updateStartupText("WebSocket error: Unable to connect to server");
+    socket.onerror = () => {
+        updateStartupText("Error connecting to Nekoframe...");
     };
-
 
     socket.onclose = () => {
-
-        // Hide all elements when disconnected
-        const elements = [
-            '.chart-container',
-            '.os',
-            '#storage-container',
-            '.clock-container',
-            '.process-container',
-            '.music-visualizer',
-            '.health-info',
-            '.songTitle',
-            '.gpuChart-container',
-            '.networkChart-container'
-        ];
-
-        elements.forEach(selector => {
-            const element = document.querySelector(selector);
-            if (element) {
-                element.style.display = 'none';
-            }
-        });
-
-        showStartupScreen(true);
-        updateStartupText("Disconnected from WebSocket server. Attempting to reconnect...");
+        if (metricsWidget) {
+            metricsWidget.style.opacity = '0';
+            metricsWidget.style.pointerEvents = 'none';
+        }
+        const clockWidget = document.getElementById('clock-widget');
+        if (clockWidget) clockWidget.style.display = 'none';
+        const procWidget = document.getElementById('process-widget');
+        if (procWidget) procWidget.style.display = 'none';
+        const healthWidget = document.getElementById('health-widget');
+        if (healthWidget) healthWidget.style.display = 'none';
+        const panels = document.querySelectorAll('.hud-panel');
+        panels.forEach(p => p.classList.remove('flicker-in'));
+        startupScreen.style.display = 'flex';
+        setTimeout(() => startupScreen.style.opacity = '1', 10);
+        updateStartupText("Disconnected. Attempting to reconnect...");
+        hasBooted = false; // Reset boot flag on disconnect
+        dataStreamReady = false;
+        
         if (!reconnectInterval) {
-            reconnectInterval = setInterval(() => {
-                updateStartupText("Attempting to reconnect...");
-                connectWebSocket();
-            }, 5000);
+            reconnectInterval = setInterval(connectWebSocket, 5000);
         }
     };
-}
-
-// Initial connection
-connectWebSocket();
-
-document.addEventListener('DOMContentLoaded', () => {
-    initAudioVisualizer();
-    initParallaxEffect();
-});
-
-function updateDateTime() {
-    const now = new Date();
-
-    // Update time
-    const hours = now.getHours();
-    const minutes = now.getMinutes();
-    const ampm = hours >= 12 ? 'PM' : 'AM';
-    const displayHours = hours % 12 || 12; // Convert to 12-hour format
-
-    const timeSpan = document.querySelector('.time-text span:first-child');
-    const ampmSpan = document.querySelector('.time-sub-text');
-    timeSpan.textContent = `${displayHours}:${minutes.toString().padStart(2, '0')}`;
-    ampmSpan.textContent = ampm;
-
-    // Update date
-    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-
-    const dayName = days[now.getDay()];
-    const monthName = months[now.getMonth()];
-    const date = now.getDate();
-
-    // Add ordinal suffix to date
-    const ordinal = (date) => {
-        if (date > 3 && date < 21) return 'th';
-        switch (date % 10) {
-            case 1: return 'st';
-            case 2: return 'nd';
-            case 3: return 'rd';
-            default: return 'th';
-        }
-    };
-    updateTimeIcon();
-    const dayText = document.querySelector('.day-text');
-    dayText.textContent = `${dayName}, ${monthName} ${date}${ordinal(date)}`;
-}
-
-function updateTimeIcon() {
-    const now = new Date();
-
-    const hours = now.getHours();
-    const moonIcon = document.querySelector('.moon');
-    const sunIcon = document.querySelector('.sun');
-
-    // Show sun icon between 6 AM and 6 PM (6-18), moon icon otherwise
-    if (hours >= 6 && hours < 18) {
-        sunIcon.style.display = 'block';
-        moonIcon.style.display = 'none';
-    } else {
-        sunIcon.style.display = 'none';
-        moonIcon.style.display = 'block';
-    }
-}
-
-updateDateTime();
-setInterval(updateDateTime, 1000);
-
-function showChart() {
-    const chartContainer = document.querySelector('.chart-container');
-    const os = document.querySelector('.os');
-    const storage = document.getElementById('storage-container');
-    const clock = document.querySelector('.clock-container');
-    const process = document.querySelector('.process-container');
-    const musicv = document.querySelector('.music-visualizer');
-    const health = document.querySelector('.health-info');
-    const song = document.querySelector('.songTitle');
-    const gpuContainer = document.querySelector('.gpuChart-container');
-    const networkContainer = document.querySelector('.networkChart-container');
-
-    // Initially show loader and hide chart
-    clock.style.display = 'block';
-    process.style.display = 'block';
-    musicv.style.display = 'block';
-    health.style.display = 'block';
-    song.style.display = 'block';
-    chartContainer.style.display = 'block';
-    os.style.display = 'block';
-    storage.style.display = 'block';
 
     socket.onmessage = (event) => {
-
+        if (!dataStreamReady) return;
 
         const data = JSON.parse(event.data);
-
-        // Check GPU detection
-        const hasGPU = data.gpu_name && 
-                      data.gpu_usage !== undefined && 
-                      data.gpu_temp !== undefined &&
-                      data.gpu_name !== "GPU not found";
-
-        // Handle GPU container visibility 
-        if (!hasGPU) {
-            gpuContainer.style.display = 'none';
-        } else {
-            gpuContainer.style.display = 'block';
+        
+        if (!hasBooted && data.username) {
+            hasBooted = true;
+            updateStartupText(`Welcome ${data.username}`);
+            setTimeout(revealDashboard, 1500);
         }
 
-        // Update system information
-        document.getElementById("statsData").innerHTML = `
-        <table>
-        <tr>
-        <td class="stats">HOST: ${data.host_name}</td>
-        <td class="stats">OS: ${data.os_name}</td>
-        </tr>
-        <tr>
-        <td class="stats">Memory: ${data.ram_amount}</td>
-        <td class="stats">CPU: ${data.cpu_name.split(' with ')[0]}</td>
-        </tr>
-        </table>`;
-
-        document.getElementById('process-amount').textContent = `Process: ${data.process_count}`;
-
-        document.getElementById('gpuName').textContent = `${data.gpu_name}`;
-
-        // Update health messages
-        document.getElementById('health-mgs').textContent = `System Health: ${data.health.status}`;
-        document.getElementById('warning-mgs').innerHTML = data.health.warnings.length > 0 ?
-            `<i class="fa-solid fa-triangle-exclamation"></i> ${data.health.warnings.join(', ')}` : '';
-
-        // Update network chart data
-        networkChart.data.datasets[0].data.shift(); // Remove oldest download speed
-        networkChart.data.datasets[1].data.shift(); // Remove oldest upload speed
-
-        networkChart.data.datasets[0].data.push(parseFloat(data.network_down)); // Add new download speed
-        networkChart.data.datasets[1].data.push(parseFloat(data.network_up));   // Add new upload speed
-
-        networkChart.update('none');
-
-        // Update GPU temperature chart
-        gpuChart.data.datasets[0].data.shift();
-        gpuChart.data.datasets[0].data.push(parseFloat(data.gpu_temp));
-        gpuChart.update('none');
-
-        // Update chart data
-        currentStats[0].value = parseFloat(data.cpu_usage);    // CPU first
-        currentStats[1].value = parseFloat(data.ram_usage);    // RAM second
-        currentStats[2].value = hasGPU ? parseFloat(data.gpu_usage) : 0;   // GPU last
-
-        // Update chart
-        chart.data.datasets = currentStats.map((stat, index) =>
-            createDataset(stat.value, index, currentStats.length)
-        );
-        chart.update('none');
-
-        // Update legend
-        updateLegend();
-
-        // Update disk information
-        diskInfo(data.disks);
-
-
-        document.getElementById("process-Info").innerHTML = `
-        <table class="rwd-table">
-            <tr>
-                <th>PID</th>
-                <th>Name</th>
-                <th>Usage</th>
-            </tr>
-            ${data.top_processes.map(process => `
-                <tr>
-                    <td data-th="PID">${process.pid}</td>
-                    <td data-th="Name">${process.name}</td>
-                    <td data-th="Usage">${process.cpu_usage.toFixed(1)}% | ${(process.memory_usage / (1024 * 1024)).toFixed(1)} MB</td>
-                </tr>
-            `).join('')}
-        </table>`;
+        processNekoframeData(data);
     };
 }
 
-// Function to update disk information
-function diskInfo(disks) {
+function updateHazardStripes(containerId, percentage) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    const spans = container.querySelectorAll('span');
+    const total = spans.length;
+    const activeCount = (percentage / 100) * total;
 
-    try {
-        if (Array.isArray(disks) && disks.length > 0) {
-            const storageContainer = document.getElementById('storage-container');
-            storageContainer.innerHTML = ''; // Clear existing content
-
-            // Sort the disks array alphabetically by drive letter
-            const sortedDisks = [...disks].sort((a, b) => {
-                const driveA = a.split('::')[0].trim();
-                const driveB = b.split('::')[0].trim();
-                return driveA.localeCompare(driveB);
-            });
-
-            sortedDisks.forEach((diskString, index) => {
-                const diskInfo = diskString.split('::');
-                if (diskInfo.length === 2) {
-                    const [drive, spaceInfo] = diskInfo;
-                    const matches = spaceInfo.match(/(\d+\.?\d*)\s*GB\s*\/\s*(\d+\.?\d*)\s*GB/);
-
-                    if (matches) {
-                        const used = parseFloat(matches[1]);
-                        const total = parseFloat(matches[2]);
-                        const percentage = Math.round((used / total) * 100);
-
-                        // Create drive container
-                        const driveElement = document.createElement('div');
-                        driveElement.className = 'drive-info';
-                        driveElement.innerHTML = `
-                            <div class="storage-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M0 96C0 60.7 28.7 32 64 32l384 0c35.3 0 64 28.7 64 64l0 184.4c-17-15.2-39.4-24.4-64-24.4L64 256c-24.6 0-47 9.2-64 24.4L0 96zM64 288l384 0c35.3 0 64 28.7 64 64l0 64c0 35.3-28.7 64-64 64L64 480c-35.3 0-64-28.7-64-64l0-64c0-35.3 28.7-64 64-64zM320 416a32 32 0 1 0 0-64 32 32 0 1 0 0 64zm128-32a32 32 0 1 0 -64 0 32 32 0 1 0 64 0z"/></svg></div>
-                            <div class="info">
-                                <div class="disk-total">${drive}::${used} GB/${total} GB</div>
-                                <div class="disk-free">${(total - used).toFixed(1)} GB free</div>
-                                <div class="progress-bar">
-                                    <div class="progress" style="width: ${percentage}%"></div>
-                                </div>
-                            </div>
-                        `;
-
-                        storageContainer.appendChild(driveElement);
-                    }
-                }
-            });
+    spans.forEach((span, index) => {
+        if (index < Math.floor(activeCount)) {
+            span.classList.add('active');
+            span.style.opacity = '1';
+        } else if (index === Math.floor(activeCount)) {
+            const remainder = activeCount - Math.floor(activeCount);
+            if (remainder > 0.05) {
+                span.classList.add('active');
+                span.style.opacity = (0.18 + remainder * 0.82).toFixed(2);
+            } else {
+                span.classList.remove('active');
+                span.style.opacity = '0.18';
+            }
         } else {
-            console.warn("No disk info available:", data.disks);
+            span.classList.remove('active');
+            span.style.opacity = '0.18';
         }
-    } catch (error) {
-        console.error("Error parsing disk info:", error);
+    });
+}
+
+// --- Data Processing ---
+function processNekoframeData(data) {
+    // System Info
+    const sysNameElem = document.getElementById('sys-name');
+    if (sysNameElem) sysNameElem.textContent = data.system_name || "PC";
+    const sysUserElem = document.getElementById('sys-user');
+    if (sysUserElem) sysUserElem.textContent = data.username || "User";
+
+    // CPU Metrics
+    if (data.cpu) {
+        const nameCpu = document.getElementById('name-cpu');
+        if (nameCpu) nameCpu.textContent = data.cpu.name.split(' ')[0] || "CPU";
+        const cpuUsage = data.cpu.usage_percent || 0;
+        const textCpu = document.getElementById('text-cpu');
+        if (textCpu) textCpu.textContent = Math.round(cpuUsage) + '%';
+        const tempCpu = document.getElementById('temp-cpu');
+        if (tempCpu) tempCpu.textContent = data.cpu.temp_celsius ? Math.round(data.cpu.temp_celsius) + '°C' : '--';
+        updateHazardStripes('stripes-cpu', cpuUsage);
+        telemetryState.cpu = cpuUsage;
+    }
+
+    // GPU Metrics
+    if (data.gpu) {
+        const nameGpu = document.getElementById('name-gpu');
+        if (nameGpu) nameGpu.textContent = data.gpu.name.split(' ')[0] || "GPU";
+        const gpuUsage = data.gpu.usage_percent || 0;
+        const textGpu = document.getElementById('text-gpu');
+        if (textGpu) textGpu.textContent = Math.round(gpuUsage) + '%';
+        const tempGpu = document.getElementById('temp-gpu');
+        if (tempGpu) tempGpu.textContent = data.gpu.temp_celsius ? Math.round(data.gpu.temp_celsius) + '°C' : '--';
+        updateHazardStripes('stripes-gpu', gpuUsage);
+        telemetryState.gpu = gpuUsage;
+    }
+
+    // RAM Metrics
+    if (data.ram) {
+        const usedGb = data.ram.used_gb;
+        const totalGb = data.ram.total_gb;
+        const ramPercent = totalGb > 0 ? (usedGb / totalGb) * 100 : 0;
+        const textRam = document.getElementById('text-ram');
+        if (textRam) textRam.textContent = Math.round(ramPercent) + '%';
+        const valRam = document.getElementById('val-ram');
+        if (valRam) valRam.textContent = `${usedGb.toFixed(1)} / ${totalGb.toFixed(0)} GB`;
+        updateHazardStripes('stripes-ram', ramPercent);
+        telemetryState.ram = ramPercent;
+    }
+
+    // Process List
+    const procContainer = document.getElementById('process-container');
+    const procCountElem = document.getElementById('process-count');
+    if (procCountElem) {
+        procCountElem.textContent = data.process_count || (data.top_processes ? data.top_processes.length : 0);
+    }
+    
+    if (data.top_processes && data.top_processes.length > 0) {
+        procContainer.innerHTML = data.top_processes.slice(0, 10).map(proc => {
+            const mb = (proc.memory_usage / (1024 * 1024)).toFixed(1);
+            const cpu = (proc.cpu_usage || 0).toFixed(1);
+            return `
+                <div class="proc-row">
+                    <span class="col-pid">${proc.pid || '--'}</span>
+                    <span class="col-name" title="${proc.name}">${proc.name}</span>
+                    <span class="col-usage">${cpu}% | ${mb} MB</span>
+                </div>
+            `;
+        }).join('');
+    }
+
+    // Health Evaluation & Alerts
+    const maxTemp = Math.max(data.cpu?.temp_celsius || 0, data.gpu?.temp_celsius || 0);
+    const avgLoad = ((data.cpu?.usage_percent || 0) + (data.gpu?.usage_percent || 0) + (data.ram && data.ram.total_gb > 0 ? (data.ram.used_gb / data.ram.total_gb) * 100 : 0)) / 3;
+
+    const healthWidgetElem = document.getElementById('health-widget');
+    const healthVerticalText = document.getElementById('health-vertical-text');
+    
+    if (maxTemp > 85) {
+        if (healthVerticalText) {
+            healthVerticalText.textContent = "SYSTEM: WARNING";
+            healthVerticalText.style.color = "#ef4444";
+            healthVerticalText.style.textShadow = "0 0 8px rgba(239, 68, 68, 0.9)";
+        }
+        if (healthWidgetElem) {
+            healthWidgetElem.classList.add('status-warning');
+            healthWidgetElem.classList.remove('status-heavy');
+        }
+    } else if (avgLoad > 75) {
+        if (healthVerticalText) {
+            healthVerticalText.textContent = "SYSTEM: HEAVY";
+            healthVerticalText.style.color = "#ffffff";
+            healthVerticalText.style.textShadow = "0 0 8px rgba(255, 255, 255, 0.9)";
+        }
+        if (healthWidgetElem) {
+            healthWidgetElem.classList.remove('status-warning');
+            healthWidgetElem.classList.add('status-heavy');
+        }
+    } else {
+        if (healthVerticalText) {
+            healthVerticalText.textContent = "SYSTEM: HEALTHY";
+            healthVerticalText.style.color = "#ffffff";
+            healthVerticalText.style.textShadow = "0 0 8px rgba(255, 255, 255, 0.9)";
+        }
+        if (healthWidgetElem) {
+            healthWidgetElem.classList.remove('status-warning', 'status-heavy');
+        }
+    }
+
+    let warnings = [];
+    if (data.cpu && data.cpu.temp_celsius > 90) warnings.push(`CPU is overheating (${Math.round(data.cpu.temp_celsius)}°C)`);
+    if (data.gpu && data.gpu.temp_celsius > 85) warnings.push(`GPU is overheating (${Math.round(data.gpu.temp_celsius)}°C)`);
+    
+    if (warnings.length > 0) {
+        healthBanner.style.display = 'flex';
+        healthMessage.textContent = warnings.join(' | ');
+    } else {
+        healthBanner.style.display = 'none';
     }
 }
 
-let currentStats = [
-    { label: 'CPU', value: 0 },
-    { label: 'RAM', value: 0 },
-    { label: 'GPU', value: 0 },
-];
+// --- Clock ---
+function updateDateTime() {
+    const now = new Date();
+    
+    let hours = now.getHours();
+    const minutes = now.getMinutes();
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12 || 12;
 
-function createDataset(value, index, total) {
-    return {
-        data: [value, 100 - value],
-        backgroundColor: [
-            getComputedStyle(document.documentElement).getPropertyValue(`--color-${index}`),
-            'transparent'
-        ],
-        weight: 1,
-        radius: `${85 - (index * 5)}%`,
-        rotation: 90,
-        circumference: 270
+    document.getElementById('time-hours').textContent = hours;
+    document.getElementById('time-minutes').textContent = minutes.toString().padStart(2, '0');
+    document.getElementById('time-ampm').textContent = ampm;
+
+    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    
+    const date = now.getDate();
+    const ordinal = (d) => {
+        if (d > 3 && d < 21) return 'TH';
+        switch (d % 10) {
+            case 1: return 'ST';
+            case 2: return 'ND';
+            case 3: return 'RD';
+            default: return 'TH';
+        }
     };
+    
+    document.getElementById('day-text').textContent = `${days[now.getDay()]}, ${months[now.getMonth()]} ${date}${ordinal(date)}`.toUpperCase();
+
+    const h24 = now.getHours();
+    if (h24 >= 6 && h24 < 18) {
+        document.getElementById('icon-sun').style.display = 'block';
+        document.getElementById('icon-moon').style.display = 'none';
+    } else {
+        document.getElementById('icon-sun').style.display = 'none';
+        document.getElementById('icon-moon').style.display = 'block';
+    }
 }
+setInterval(updateDateTime, 1000);
+updateDateTime();
 
-// Initialize chart
-const ctx = document.getElementById('performanceChart').getContext('2d');
-const chart = new Chart(ctx, {
-    type: 'doughnut',
-    data: {
-        labels: ['', ''],
-        datasets: currentStats.map((stat, index) =>
-            createDataset(stat.value, index, currentStats.length)
-        )
-    },
-    options: {
-        animation: {
-            duration: 0
-        },
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-            legend: {
-                display: false
-            }
-        },
-        cutout: '60%',
-        rotation: 180,
-        circumference: 270,
-        borderWidth: 1
-    }
-});
-
-// Create legend
-const legendContainer = document.getElementById('statsLegend');
-function updateLegend() {
-    legendContainer.innerHTML = '';
-    currentStats.forEach((stat, index) => {
-        const item = document.createElement('div');
-        item.className = 'stat-item';
-        const color = getComputedStyle(document.documentElement).getPropertyValue(`--color-${index}`);
-        item.innerHTML = `
-            <span class="stat-color" style="background: ${color}"></span>
-            <span>${stat.label}:${Math.round(stat.value)}%</span>
-        `;
-        legendContainer.appendChild(item);
-    });
-}
-
-document.addEventListener('DOMContentLoaded', function () {
-    const statsCard = document.getElementById('statsCard');
-    const chartCard = document.getElementById('chartCard');
-
-    // Initialize statsCard in minimized state
-    statsCard.classList.add('minimized');
-
-    // Add hover events for statsCard only
-    statsCard.addEventListener('mouseenter', function () {
-        this.classList.remove('minimized');
-    });
-
-    statsCard.addEventListener('mouseleave', function () {
-        this.classList.add('minimized');
-    });
-});
-
-
-const gpuCtx = document.getElementById('gpuChart').getContext('2d');
-const gpuChart = new Chart(gpuCtx, {
-    type: 'line',
-    data: {
-        labels: Array(7).fill(''),
-        datasets: [{
-            label: 'GPU Temperature',
-            data: Array(7).fill(0),
-            borderColor: 'rgba(255, 255, 255, 0.45)',
-            backgroundColor: "rgba(255, 255, 255, 0.05)",
-            fill: true,
-            tension: 0.4
-        }]
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-            y: {
-                beginAtZero: true,
-                grid: {
-                    color: 'rgba(255, 255, 255, 0.1)'
-                },
-                ticks: {
-                    color: 'rgba(255, 255, 255, 0.47)',
-                    callback: function (value) {
-                        return value + '°C';
-                    }
-                }
-            },
-            x: {
-                grid: {
-                    color: 'rgba(255, 255, 255, 0.1)'
-                },
-                ticks: {
-                    color: 'rgba(255, 255, 255, 0.7)'
-                }
-            }
-        },
-        plugins: {
-            legend: {
-                labels: {
-                    color: '#ffffff',
-                    font: {
-                        size: 10,
-                        family: 'font2'
-                    }
-                },
-                position: 'bottom',
-                align: 'end',
-            }
-        }
-    }
-});
-
-
-const networkCtx = document.getElementById("networkChart").getContext("2d");
-const networkChart = new Chart(networkCtx, {
-    type: "line",
-    data: {
-        labels: Array(7).fill(""),
-        datasets: [
-            {
-                label: "Download",
-                data: Array(7).fill(0),
-                borderColor: "rgba(175, 125, 190, 0.36)",
-                backgroundColor: "rgba(255, 255, 255, 0.05)",
-                fill: true,
-                tension: 0.4,
-            },
-            {
-                label: "Upload",
-                data: Array(7).fill(0),
-                borderColor: "rgba(157, 143, 235, 0.36)",
-                backgroundColor: "rgba(255, 255, 255, 0.05)",
-                fill: true,
-                tension: 0.4,
-            },
-        ],
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-            y: {
-                beginAtZero: true,
-                grid: {
-                    color: "rgba(255, 255, 255, 0.1)",
-                },
-                ticks: {
-                    color: "rgba(255, 255, 255, 0.7)",
-                    callback: function (value) {
-                        return value + ' MB/s';
-                    }
-                }
-            },
-            x: {
-                grid: {
-                    color: "rgba(255, 255, 255, 0.1)",
-                },
-                ticks: {
-                    color: "rgba(255, 255, 255, 0.7)",
-                }
-            }
-        },
-        plugins: {
-            legend: {
-                labels: {
-                    color: "#ffffff",
-                    font: {
-                        size: 10,
-                        family: 'font2',
-                    }
-                },
-                position: 'bottom',
-                align: 'end',
-            }
-        }
-    }
-});
-
-
-
-// Audio Visualizer Setup
-let audioContext;
-let analyser;
-let dataArray;
+// --- Audio Visualizer (Optimized 30 FPS) ---
 const canvas = document.getElementById('AudioCanvas');
 const canvasCtx = canvas.getContext('2d');
-
-// Initialize audio visualization
 let previousAudioData = new Float32Array(64).fill(0);
-let animationFrameId;
-
-// Initialize variables for audio metadata
-let currentSongTitle = '';
-let currentSongArtwork = '';
+let lastDrawTime = 0;
+let visualizerData = null;
 
 function initAudioVisualizer() {
-    // Get Wallpaper Engine audio listener for visualizer
+    canvas.width = 400;
+    canvas.height = 60;
+    
     window.wallpaperRegisterAudioListener && window.wallpaperRegisterAudioListener((audioArray) => {
-        updateVisualizer(audioArray);
+        visualizerData = audioArray;
+        document.getElementById('music-visualizer').style.display = 'flex';
     });
 
-    // Register media properties listener
     window.wallpaperRegisterMediaPropertiesListener && window.wallpaperRegisterMediaPropertiesListener((event) => {
-        const songName = document.getElementById('songName');
-        const songTitle = document.querySelector('.songTitle');
-
+        const songInfo = document.getElementById('song-info');
         if (event.title) {
-            songName.textContent = event.title;
-            songTitle.style.display = 'flex';
+            document.getElementById('song-name').textContent = event.title + (event.artist ? ` - ${event.artist}` : '');
+            songInfo.style.display = 'flex';
         } else {
-            songTitle.style.display = 'none';
+            songInfo.style.display = 'none';
         }
     });
 
-    // Register media thumbnail listener
     window.wallpaperRegisterMediaThumbnailListener && window.wallpaperRegisterMediaThumbnailListener((event) => {
-        const songImage = document.querySelector('.songTitle img');
+        const img = document.getElementById('song-image');
         if (event.thumbnail) {
-            songImage.src = event.thumbnail;
-            songImage.style.display = 'block';
+            img.src = event.thumbnail;
+            img.style.display = 'block';
         } else {
-            songImage.style.display = 'none';
+            img.style.display = 'none';
         }
     });
 
-    // Setup canvas
-    canvas.width = 500;
-    canvas.height = 100;
-    canvasCtx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+    requestAnimationFrame(renderVisualizer);
 }
 
-function updateVisualizer(audioArray) {
-    if (animationFrameId) {
-        cancelAnimationFrame(animationFrameId);
-    }
+function renderVisualizer(timestamp) {
+    requestAnimationFrame(renderVisualizer);
+
+    // Throttle to 30fps to save GPU/CPU load
+    if (timestamp - lastDrawTime < 33) return;
+    lastDrawTime = timestamp;
+
+    if (!visualizerData) return;
 
     const barWidth = canvas.width / 64;
     const barSpacing = 2;
-    const maxBarHeight = canvas.height - 10;
-    const smoothingFactor = 0.3;
-    const decayRate = 0.98;
-    const amplificationFactor = window.audioAmplificationFactor || 5; // Amplify the audio signal
+    const amplification = window.audioAmplificationFactor || 4;
+    const smoothing = 0.4;
+    const decay = 0.95;
 
     canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
 
-    audioArray.forEach((value, index) => {
-        // Amplify and smooth the audio data
-        const amplifiedValue = Math.min(value * amplificationFactor, 1);
-        previousAudioData[index] = previousAudioData[index] * (1 - smoothingFactor) + amplifiedValue * smoothingFactor;
+    // Create gradient once
+    const gradient = canvasCtx.createLinearGradient(0, 0, 0, canvas.height);
+    gradient.addColorStop(0, 'rgba(168, 85, 247, 0.9)'); // Purple
+    gradient.addColorStop(1, 'rgba(56, 189, 248, 0.3)'); // Blue
+    canvasCtx.fillStyle = gradient;
 
-        // Apply decay
-        previousAudioData[index] *= decayRate;
+    for (let i = 0; i < 64; i++) {
+        const val = Math.min(visualizerData[i] * amplification, 1);
+        previousAudioData[i] = previousAudioData[i] * (1 - smoothing) + val * smoothing;
+        previousAudioData[i] *= decay;
 
-        const barHeight = previousAudioData[index] * maxBarHeight;
-        const x = index * (barWidth + barSpacing);
-        const y = canvas.height - barHeight;
+        const h = previousAudioData[i] * canvas.height;
+        const x = i * (barWidth + barSpacing);
+        const y = canvas.height - h;
 
-        // Create gradient for bars
-        const gradient = canvasCtx.createLinearGradient(0, y, 0, canvas.height);
-        gradient.addColorStop(0, 'rgba(255, 255, 255, 0.8)');
-        gradient.addColorStop(1, 'rgba(255, 255, 255, 0.05)');
-
-        canvasCtx.fillStyle = gradient;
-        canvasCtx.fillRect(x, y, barWidth, barHeight);
-    });
-
-    animationFrameId = requestAnimationFrame(() => updateVisualizer(audioArray));
+        canvasCtx.fillRect(x, y, barWidth, h);
+    }
 }
 
-function sequentialLoad() {
-    const elements = [
-        { el: document.querySelector('.process-containe'), delay: 1000 },
-        { el: document.querySelector('.health-info'), delay: 2500 },
-        { el: document.querySelector('.clock'), delay: 4000 },
-        { el: document.querySelector('.usage-stats'), delay: 5500 },
-        { el: document.querySelector('.networkChart-container'), delay: 7000 },
-        { el: document.querySelector('.gpuChart-container'), delay: 8500 },
-        { el: document.querySelector('.oslayer'), delay: 10000 },
-        { el: document.querySelector('.storage-layer'), delay: 11500 },
-        { el: document.querySelector('.songTitle'), delay: 13000 },
-        { el: document.querySelector('.music-visualizer'), delay: 14500 }
-    ];
-
-    // Initially hide all elements
-    elements.forEach(({ el }) => {
-        if (el) {
-            el.style.opacity = '0';
-            el.style.display = 'none';
-            el.style.animation = 'none';
-        }
-    });
-
-    // Get the maximum delay
-    const maxDelay = Math.max(...elements.map(item => item.delay));
-
-    // Show elements sequentially
-    elements.forEach(({ el, delay }) => {
-        if (el) {
-            setTimeout(() => {
-                el.style.display = 'block';
-                el.style.opacity = '0';
-
-                void el.offsetWidth;
-
-                el.style.animation = 'tvFlicker 0.8s step-end forwards';
-            }, delay);
-        }
-    });
-    setTimeout(() => {
-        if (window.enableElementMovement !== false) {
-            const gpuContainer = document.querySelector('.gpuChart-container');
-            const hasGPU = gpuContainer && gpuContainer.style.display !== 'none';
-            updateLocation(hasGPU);
-        }
-        // Hide process container after 5 seconds
-        const processContainer = document.querySelector('.process-container');
-        if (processContainer) {
-            processContainer.style.opacity = '0';
-            setTimeout(() => {
-                processContainer.style.display = 'none';
-            }, 500);
-        }
-    }, maxDelay + 1000);
-}
-
-
-function updateLocation(hasGPU) {
-
-        const moveElements = [
-            { el: '.clock-container', delay: 0, class: 'clock-move' },
-            { el: '.oslayer', delay: 500, class: 'oslayer-move' },
-            { el: '.usage-stats', delay: 1000, class: 'usage-stats-move' },
-            { el: '.storage-layer', delay: 1500, class: 'storage-layer-move' },
-            { el: '.health-info', delay: 2000, class: 'health-info-move' },
-            { el: '.gpuChart-container', delay: 2500, class: hasGPU ? 'gpuChart-container-move' : '' },
-            { el: '.networkChart-container', delay: 3000, class: hasGPU ? 'networkChart-container-move' : 'networkChart-container-nodetect-move' }
-        ];
-
-    moveElements.forEach(({ el, delay, class: className }) => {
-        const element = document.querySelector(el);
-        if (element) {
-            setTimeout(() => {
-                // Setup initial transition
-                element.style.transition = 'all 0.8s ease-in-out';
-
-                // Wait for fade out to complete
-                setTimeout(() => {
-                    // Add move class
-                    element.classList.add(className);
-
-                    
-                }, 800);
-            }, delay);
-        }
-    });
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-    const btnProc = document.querySelector('.btn-proc');
-    const processContainer = document.querySelector('.process-container');
-
-    btnProc.addEventListener('click', () => {
-        if (processContainer.style.display === 'none') {
-            processContainer.style.display = 'block';
-            setTimeout(() => {
-                processContainer.style.opacity = '1';
-            }, 10);
-        } else {
-            processContainer.style.opacity = '0';
-            setTimeout(() => {
-                processContainer.style.display = 'none';
-            }, 500);
-        }
-    });
+// --- Parallax Effect ---
+document.addEventListener('mousemove', (e) => {
+    const video = document.getElementById('bg-video');
+    if (!video) return;
+    const mouseX = (e.clientX / window.innerWidth) - 0.5;
+    const mouseY = (e.clientY / window.innerHeight) - 0.5;
+    video.style.transform = `translate(${mouseX * 10}px, ${mouseY * 10}px) scale(1.03)`;
 });
 
-function initParallaxEffect() {
-    const video = document.getElementById('bg-video');
-    const parallaxStrength = 0.02; // Adjust this value to control movement intensity
-    const scale = 1.2; // Match the CSS scale value
-
-    document.addEventListener('mousemove', (e) => {
-        const mouseX = e.clientX / window.innerWidth - 0.5;
-        const mouseY = e.clientY / window.innerHeight - 0.5;
-
-        requestAnimationFrame(() => {
-            video.style.transform = `translate(-50%, -50%) translate(${mouseX * 20}px, ${mouseY * 20}px) scale(${scale})`;
-        });
-    });
-}
+// Boot
+initAudioVisualizer();
+bootSequence();
