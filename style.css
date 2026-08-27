@@ -599,10 +599,10 @@ body {
 .diag-vertical-text span {
     writing-mode: vertical-rl;
     transform: rotate(180deg);
-    font-family: 'font2', monospace;
-    font-size: 7px;
-    font-weight: bold;
-    letter-spacing: 1px;
+    font-family: 'Orbitron', 'Oxanium', sans-serif;
+    font-size: 8px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
     line-height: 1;
     color: #ffffff;
     text-shadow: 0 0 8px rgba(255, 255, 255, 0.9), 0 0 16px rgba(255, 255, 255, 0.4);
@@ -753,9 +753,9 @@ body {
 }
 
 .mecha-value {
-    font-family: 'font2', monospace;
-    font-size: 13px;
-    font-weight: bold;
+    font-family: 'Orbitron', 'Oxanium', sans-serif;
+    font-size: 15px;
+    font-weight: 800;
     color: #ffffff;
     letter-spacing: 1px;
 }
@@ -776,8 +776,9 @@ body {
     border-left: 2px solid #ffffff;
     border-bottom: 2px solid #ffffff;
     border-top: 2px solid transparent;
-    font-family: 'font2', monospace;
-    font-size: 9px;
+    font-family: 'Orbitron', 'Oxanium', sans-serif;
+    font-size: 9.5px;
+    font-weight: 700;
     letter-spacing: 1px;
     text-transform: uppercase;
     color: rgba(255, 255, 255, 0.9);
@@ -785,6 +786,103 @@ body {
 
 .mecha-sub-divider {
     opacity: 0.5;
+}
+
+/* GPU Dual Fan Module */
+.gpu-fan-module {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-top: 6px;
+    width: max-content;
+}
+
+.gpu-fan-top-line {
+    width: 100%;
+    height: 1.5px;
+    background: #ffffff;
+    box-shadow: 0 0 6px rgba(255, 255, 255, 0.8), 0 0 12px rgba(255, 255, 255, 0.4);
+    border-radius: 1px;
+}
+
+.gpu-fan-body {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.gpu-fan-housings {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.fan-housing {
+    width: 20px;
+    height: 20px;
+    border: 1.5px solid #ffffff;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 6px rgba(255, 255, 255, 0.4);
+    background: rgba(0, 0, 0, 0.4);
+    position: relative;
+    overflow: hidden;
+    padding: 2px;
+}
+
+.fan-turbine-svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+    filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.8));
+    animation: fanSpin 1.2s linear infinite;
+    transform-origin: 50% 50%;
+}
+
+@keyframes fanSpin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.gpu-fan-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    text-align: left;
+}
+
+.gpu-fan-line1 {
+    font-family: 'Orbitron', 'Oxanium', sans-serif;
+    font-size: 8.5px;
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: 0.8px;
+    text-shadow: 0 0 6px rgba(255, 255, 255, 0.8);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    white-space: nowrap;
+}
+
+.fan-divider {
+    opacity: 0.6;
+}
+
+.gpu-fan-line2 {
+    font-family: 'Orbitron', 'Oxanium', sans-serif;
+    font-size: 7px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.85);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    white-space: nowrap;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.6);
 }
 
 /* Processes Widget */

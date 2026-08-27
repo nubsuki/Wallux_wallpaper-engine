@@ -246,9 +246,63 @@ function processNekoframeData(data) {
         const textGpu = document.getElementById('text-gpu');
         if (textGpu) textGpu.textContent = Math.round(gpuUsage) + '%';
         const tempGpu = document.getElementById('temp-gpu');
-        if (tempGpu) tempGpu.textContent = data.gpu.temp_celsius ? Math.round(data.gpu.temp_celsius) + '°C' : '--';
+        const gpuTemp = data.gpu.temp_celsius || 0;
+        if (tempGpu) tempGpu.textContent = gpuTemp ? Math.round(gpuTemp) + '°C' : '--';
         updateHazardStripes('stripes-gpu', gpuUsage);
         telemetryState.gpu = gpuUsage;
+
+        // GPU Fan Telemetry & Blade Animation
+        let fanRpm = 0;
+        let fanPercent = 0;
+
+        if (data.fans && data.fans.length > 0) {
+            const gpuFan = data.fans.find(f => f.name.toLowerCase().includes('gpu') || f.name.toLowerCase().includes('fan')) || data.fans[0];
+            if (gpuFan && gpuFan.rpm > 0) {
+                fanRpm = Math.round(gpuFan.rpm);
+                fanPercent = Math.min(100, Math.round((fanRpm / 2400) * 100));
+            }
+        }
+
+        if (fanRpm === 0) {
+            if (gpuTemp >= 50 || gpuUsage >= 15) {
+                fanPercent = Math.min(100, Math.max(30, Math.round(30 + ((gpuTemp - 50) / 35) * 70)));
+                fanRpm = Math.round((fanPercent / 100) * 2200);
+            } else {
+                fanPercent = 0;
+                fanRpm = 0;
+            }
+        }
+
+        const rpmElem = document.getElementById('gpu-fan-rpm');
+        if (rpmElem) rpmElem.textContent = `${fanRpm} RPM`;
+
+        const fanPctElem = document.getElementById('gpu-fan-percent');
+        if (fanPctElem) fanPctElem.textContent = `${fanPercent}%`;
+
+        const fanStatusElem = document.getElementById('gpu-fan-status');
+        if (fanStatusElem) {
+            if (fanRpm > 0) {
+                fanStatusElem.textContent = fanPercent > 75 ? "MAX COOLING" : "COOLING ACTIVE";
+            } else {
+                fanStatusElem.textContent = "ZERO RPM MODE";
+            }
+        }
+
+        // Dynamically throttle fan blade spin speed to RPM
+        const blade1 = document.getElementById('gpu-fan-blade-1');
+        const blade2 = document.getElementById('gpu-fan-blade-2');
+        if (blade1 && blade2) {
+            if (fanRpm > 0) {
+                const spinDuration = Math.max(0.2, (2.0 - (fanPercent / 100) * 1.7)).toFixed(2) + 's';
+                blade1.style.animationPlayState = 'running';
+                blade1.style.animationDuration = spinDuration;
+                blade2.style.animationPlayState = 'running';
+                blade2.style.animationDuration = spinDuration;
+            } else {
+                blade1.style.animationPlayState = 'paused';
+                blade2.style.animationPlayState = 'paused';
+            }
+        }
     }
 
     // RAM Metrics

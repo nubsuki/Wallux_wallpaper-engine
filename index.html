@@ -7,6 +7,9 @@
     <title>Wallux</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Michroma&family=Orbitron:wght@400;600;800;900&family=Oxanium:wght@400;600;700;800&display=swap" rel="stylesheet">
 </head>
 
 <body>
@@ -148,6 +151,53 @@
                         <span class="mecha-sub-text" id="name-gpu">GPU</span>
                         <span class="mecha-sub-divider">/</span>
                         <span class="mecha-sub-detail" id="temp-gpu">0°C</span>
+                    </div>
+                </div>
+
+                <!-- GPU Dual Fan Module -->
+                <div class="gpu-fan-module">
+                    <div class="gpu-fan-top-line"></div>
+                    <div class="gpu-fan-body">
+                        <div class="gpu-fan-housings">
+                            <div class="fan-housing">
+                                <svg class="fan-turbine-svg" id="gpu-fan-blade-1" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <circle cx="50" cy="50" r="10" fill="#ffffff" />
+                                    <g stroke="#ffffff" stroke-width="5" stroke-linecap="round">
+                                        <path d="M 50 38 C 50 22 66 12 78 14" />
+                                        <path d="M 50 38 C 50 22 66 12 78 14" transform="rotate(45 50 50)" />
+                                        <path d="M 50 38 C 50 22 66 12 78 14" transform="rotate(90 50 50)" />
+                                        <path d="M 50 38 C 50 22 66 12 78 14" transform="rotate(135 50 50)" />
+                                        <path d="M 50 38 C 50 22 66 12 78 14" transform="rotate(180 50 50)" />
+                                        <path d="M 50 38 C 50 22 66 12 78 14" transform="rotate(225 50 50)" />
+                                        <path d="M 50 38 C 50 22 66 12 78 14" transform="rotate(270 50 50)" />
+                                        <path d="M 50 38 C 50 22 66 12 78 14" transform="rotate(315 50 50)" />
+                                    </g>
+                                </svg>
+                            </div>
+                            <div class="fan-housing">
+                                <svg class="fan-turbine-svg" id="gpu-fan-blade-2" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <circle cx="50" cy="50" r="10" fill="#ffffff" />
+                                    <g stroke="#ffffff" stroke-width="5" stroke-linecap="round">
+                                        <path d="M 50 38 C 50 22 66 12 78 14" />
+                                        <path d="M 50 38 C 50 22 66 12 78 14" transform="rotate(45 50 50)" />
+                                        <path d="M 50 38 C 50 22 66 12 78 14" transform="rotate(90 50 50)" />
+                                        <path d="M 50 38 C 50 22 66 12 78 14" transform="rotate(135 50 50)" />
+                                        <path d="M 50 38 C 50 22 66 12 78 14" transform="rotate(180 50 50)" />
+                                        <path d="M 50 38 C 50 22 66 12 78 14" transform="rotate(225 50 50)" />
+                                        <path d="M 50 38 C 50 22 66 12 78 14" transform="rotate(270 50 50)" />
+                                        <path d="M 50 38 C 50 22 66 12 78 14" transform="rotate(315 50 50)" />
+                                    </g>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="gpu-fan-info">
+                            <div class="gpu-fan-line1">
+                                <span id="gpu-fan-rpm">0 RPM</span>
+                                <span class="fan-divider">//</span>
+                                <span id="gpu-fan-percent">0%</span>
+                            </div>
+                            <div class="gpu-fan-line2" id="gpu-fan-status">COOLING ACTIVE</div>
+                        </div>
                     </div>
                 </div>
             </div>
