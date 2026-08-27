@@ -94,7 +94,7 @@
     </div>
 
     <!-- Centered Processes Widget (Terminal Style - No BG / No Borders) -->
-    <div class="process-widget" id="process-widget" style="display: none;">
+    <div class="process-widget hud-panel" id="process-widget" style="display: none;">
         <div class="proc-table-header">
             <span class="col-pid">PID</span>
             <span class="col-name">Name</span>
@@ -109,11 +109,11 @@
     </div>
 
     <!-- Metrics Widget: CPU, GPU, RAM Mecha Banners -->
-    <div class="metrics-widget" id="metrics-widget" style="display: none;">
+    <div class="metrics-widget hud-panel" id="metrics-widget" style="display: none;">
         <div class="mecha-metrics-stack">
 
             <!-- CPU Banner Card -->
-            <div class="mecha-card hud-panel" id="metric-cpu-card">
+            <div class="mecha-card" id="metric-cpu-card">
                 <div class="mecha-main-row">
                     <div class="mecha-hazard-stripes" id="stripes-cpu">
                         <span></span><span></span><span></span><span></span><span></span>
@@ -133,7 +133,7 @@
             </div>
 
             <!-- GPU Banner Card -->
-            <div class="mecha-card hud-panel" id="metric-gpu-card">
+            <div class="mecha-card" id="metric-gpu-card">
                 <div class="mecha-main-row">
                     <div class="mecha-hazard-stripes" id="stripes-gpu">
                         <span></span><span></span><span></span><span></span><span></span>
@@ -202,7 +202,7 @@
             </div>
 
             <!-- RAM Banner Card -->
-            <div class="mecha-card hud-panel" id="metric-ram-card">
+            <div class="mecha-card" id="metric-ram-card">
                 <div class="mecha-main-row">
                     <div class="mecha-hazard-stripes" id="stripes-ram">
                         <span></span><span></span><span></span><span></span><span></span>
@@ -286,8 +286,8 @@
     </div>
 
     <!-- System Health Widget: Right Side of Processes -->
-    <div class="health-widget hud-panel" id="health-widget" style="display: none;">
-        <div class="diag-graphic-row">
+    <div class="health-widget" id="health-widget" style="display: none;">
+        <div class="diag-graphic-row hud-panel" id="health-diag-row">
 
             <!-- Cyber Data Matrix (Paired 2x2 Sub-Quads from Reference Image) -->
             <div class="cyber-data-matrix" id="cyber-matrix">
@@ -366,7 +366,7 @@
         </div>
 
         <!-- Disk Telemetry Module (Bottom of Health Widget) -->
-        <div class="disk-container" id="disk-container">
+        <div class="disk-container hud-panel" id="disk-container">
             <div class="disk-card" id="disk-card-0">
                 <div class="disk-header-row">
                     <span class="disk-title">DISK <span class="disk-name" id="disk-name-0">C:</span></span>
