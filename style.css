@@ -47,12 +47,18 @@
     font-style: normal;
 }
 
+html, body {
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
 body {
     font-family: font2;
     text-align: center;
     background-color: #000000;
-    margin: 0;
-    height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -60,7 +66,6 @@ body {
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
-    overflow: hidden;
 }
 
 /* Background video */
@@ -1391,4 +1396,110 @@ body.no-hud-movement .hud-panel {
     height: 48px !important;
     display: block !important;
     filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.7));
+}
+
+/* ==========================================================================
+   Hope to God this works because I ain't got those screens.
+   ========================================================================== */
+
+/* 2K Displays (1440p / 2560x1440 & 3440x1440 Ultrawide) */
+@media screen and (min-width: 2200px) and (min-height: 1250px) {
+    .clock-widget.hud-deployed {
+        top: 40px;
+        left: 40px;
+        transform: scale(1.25);
+        transform-origin: left top;
+    }
+
+    .metrics-widget.hud-deployed {
+        top: 175px;
+        left: 40px;
+        transform: scale(1.25);
+        transform-origin: left top;
+    }
+
+    .disk-container.hud-deployed {
+        top: 450px;
+        left: 40px;
+        transform: scale(1.25);
+        transform-origin: left top;
+    }
+
+    .network-widget.hud-deployed {
+        top: 650px;
+        left: 40px;
+        transform: scale(1.25);
+        transform-origin: left top;
+    }
+
+    .health-widget.hud-deployed {
+        bottom: 40px;
+        transform: scale(1.25);
+        transform-origin: left bottom;
+    }
+
+    .music-visualizer {
+        bottom: 35px;
+        width: 540px;
+        transform: translateX(-50%) scale(1.2);
+        transform-origin: center bottom;
+    }
+
+    .proc-toggle-btn {
+        bottom: 35px;
+        right: 40px;
+        transform: scale(1.25);
+        transform-origin: right bottom;
+    }
+}
+
+/* 4K Displays (2160p / 3840x2160 & 5120x2160 Super-Ultrawide) */
+@media screen and (min-width: 3500px) and (min-height: 1900px) {
+    .clock-widget.hud-deployed {
+        top: 60px;
+        left: 60px;
+        transform: scale(1.7);
+        transform-origin: left top;
+    }
+
+    .metrics-widget.hud-deployed {
+        top: 260px;
+        left: 60px;
+        transform: scale(1.7);
+        transform-origin: left top;
+    }
+
+    .disk-container.hud-deployed {
+        top: 640px;
+        left: 60px;
+        transform: scale(1.7);
+        transform-origin: left top;
+    }
+
+    .network-widget.hud-deployed {
+        top: 920px;
+        left: 60px;
+        transform: scale(1.7);
+        transform-origin: left top;
+    }
+
+    .health-widget.hud-deployed {
+        bottom: 60px;
+        transform: scale(1.7);
+        transform-origin: left bottom;
+    }
+
+    .music-visualizer {
+        bottom: 50px;
+        width: 720px;
+        transform: translateX(-50%) scale(1.6);
+        transform-origin: center bottom;
+    }
+
+    .proc-toggle-btn {
+        bottom: 50px;
+        right: 60px;
+        transform: scale(1.7);
+        transform-origin: right bottom;
+    }
 }
