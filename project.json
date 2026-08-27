@@ -1,0 +1,44 @@
+{
+  "contentrating": "Everyone",
+  "description": "Futuristic System HUD with Nekoframe Realtime system statistics.",
+  "file": "index.html",
+  "general": {
+    "properties": {
+      "schemecolor": {
+        "order": 0,
+        "text": "ui_browse_properties_scheme_color",
+        "type": "color",
+        "value": "0 0 0"
+      },
+      "customvideo": {
+        "condition": "",
+        "order": 1,
+        "text": "Background Video (.webm only)",
+        "type": "file",
+        "value": "miyabi-.webm"
+      },
+      "enablehudmovement": {
+        "condition": "",
+        "order": 2,
+        "text": "Animate HUD Movement / Deployment",
+        "type": "bool",
+        "value": true
+      },
+      "audioamplification": {
+        "condition": "",
+        "max": 10,
+        "min": 1,
+        "order": 3,
+        "precision": 1,
+        "step": 0.5,
+        "text": "Audio Visualizer Sensitivity",
+        "type": "slider",
+        "value": 4
+      }
+    }
+  },
+  "preview": "preview.jpg",
+  "title": "Wallux V2.0",
+  "type": "web",
+  "version": 1
+}

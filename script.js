@@ -1,18 +1,59 @@
 // --- Wallpaper Engine Properties ---
+window.enableHudMovement = true;
+
 window.wallpaperPropertyListener = {
   applyUserProperties: function (properties) {
     var videoElement = document.getElementById("bg-video");
 
     if (properties.customvideo && properties.customvideo.value) {
       var path = properties.customvideo.value;
-      if (!path.startsWith("file:///")) {
-        path = "file:///" + path;
+      if (path && typeof path === "string" && path.trim() !== "") {
+        // Strictly enforce WebM format and reject MP4
+        if (path.toLowerCase().endsWith(".mp4")) {
+          console.warn(
+            "MP4 format is not supported by CEF web engine in Wallpaper Engine. Please select a .webm video.",
+          );
+        } else {
+          var finalSrc = path;
+          // If absolute Windows path
+          if (/^[a-zA-Z]:[\\/]/.test(path)) {
+            finalSrc = "file:///" + path.replace(/\\/g, "/");
+          }
+          if (videoElement) {
+            videoElement.src = finalSrc;
+            videoElement.load();
+            videoElement.play().catch(function (e) {
+              console.log("Video autoplay error:", e);
+            });
+          }
+        }
       }
-      videoElement.src = path;
-      videoElement.load();
-      videoElement.play().catch(function (e) {
-        console.log("Video autoplay caught:", e);
-      });
+    }
+
+    if (properties.enablehudmovement !== undefined) {
+      window.enableHudMovement = properties.enablehudmovement.value;
+      const panels = document.querySelectorAll(".hud-panel");
+      const procWidget = document.getElementById("process-widget");
+      const procToggleBtn = document.getElementById("proc-toggle-btn");
+
+      if (!window.enableHudMovement) {
+        // Keep in first place: remove deployed state so all elements remain in their central layout
+        panels.forEach((p) => p.classList.remove("hud-deployed"));
+        if (procWidget) procWidget.classList.remove("proc-hidden");
+        if (procToggleBtn) procToggleBtn.style.display = "none";
+      } else if (hasBooted) {
+        // Apply deployed layout to operational positions
+        const deploymentElements = [
+          document.getElementById("clock-widget"),
+          document.getElementById("metrics-widget"),
+          document.getElementById("disk-container"),
+          document.getElementById("network-widget"),
+          document.getElementById("health-widget"),
+        ].filter(Boolean);
+        deploymentElements.forEach((p) => p.classList.add("hud-deployed"));
+        if (procWidget) procWidget.classList.add("proc-hidden");
+        if (procToggleBtn) procToggleBtn.style.display = "flex";
+      }
     }
 
     if (properties.audioamplification !== undefined) {
@@ -165,7 +206,6 @@ function revealDashboard() {
     });
 
     // Modules to deploy in sequential flight order:
-    // 1. Clock -> 2. Metrics -> 3. Disks -> 4. Network -> 5. Health Matrix
     const deploymentSequence = [
       clockWidget,
       metricsWidgetElem,
@@ -174,28 +214,30 @@ function revealDashboard() {
       healthWidgetElem,
     ].filter(Boolean);
 
-    // Wait ~1s after all modules finish igniting, then move them sequentially one-by-one
-    const totalIgnitionTime = 120 + (ignitionSequence.length - 1) * 420 + 950;
-    setTimeout(() => {
-      deploymentSequence.forEach((elem, idx) => {
-        setTimeout(() => {
-          elem.classList.add("hud-deployed");
-        }, idx * 280);
-      });
-
-      // Hide the Process Table and reveal the toggle button
-      const postDeployTime = deploymentSequence.length * 280 + 400;
+    if (window.enableHudMovement) {
+      // If movement enabled: wait ~1s after ignition, then move modules sequentially one-by-one
+      const totalIgnitionTime = 120 + (ignitionSequence.length - 1) * 420 + 950;
       setTimeout(() => {
-        if (procWidget) {
-          procWidget.classList.add("proc-hidden");
-        }
-        const procToggleBtn = document.getElementById("proc-toggle-btn");
-        if (procToggleBtn) {
-          procToggleBtn.style.display = "flex";
-          procToggleBtn.classList.remove("active");
-        }
-      }, postDeployTime);
-    }, totalIgnitionTime);
+        deploymentSequence.forEach((elem, idx) => {
+          setTimeout(() => {
+            elem.classList.add("hud-deployed");
+          }, idx * 280);
+        });
+
+        // Hide the Process Table and reveal the toggle button
+        const postDeployTime = deploymentSequence.length * 280 + 400;
+        setTimeout(() => {
+          if (procWidget) {
+            procWidget.classList.add("proc-hidden");
+          }
+          const procToggleBtn = document.getElementById("proc-toggle-btn");
+          if (procToggleBtn) {
+            procToggleBtn.style.display = "flex";
+            procToggleBtn.classList.remove("active");
+          }
+        }, postDeployTime);
+      }, totalIgnitionTime);
+    }
   }, 800);
 }
 

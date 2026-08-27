@@ -432,6 +432,10 @@ body {
                 opacity 0.8s ease;
 }
 
+body.no-hud-movement .hud-panel {
+    transition: opacity 0.8s ease !important;
+}
+
 .hud-panel.flicker-in {
     animation: tubeLightFlicker 1.2s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
 }
