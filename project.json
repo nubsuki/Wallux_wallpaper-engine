@@ -20,7 +20,7 @@
       "enablehudmovement": {
         "condition": "",
         "order": 2,
-        "text": "Animate HUD Movement / Deployment",
+        "text": "Animate HUD Movement",
         "type": "bool",
         "value": true
       },
