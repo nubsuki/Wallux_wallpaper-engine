@@ -387,8 +387,7 @@
                         <rect class="disk-shape-fill" id="disk-fill-0" x="0" y="0" width="0%" height="22" />
                     </g>
                     <!-- Stepped Outline Border -->
-                    <path class="disk-shape-border"
-                        d="M 0 6 L 6 0 L 52 0 L 64 8 L 152 8 L 160 14 L 160 22 L 0 22 Z" />
+                    <path class="disk-shape-border" d="M 0 6 L 6 0 L 52 0 L 64 8 L 152 8 L 160 14 L 160 22 L 0 22 Z" />
                 </svg>
                 <span class="disk-tab-text" id="disk-tab-0">C:</span>
                 <span class="disk-percent-text" id="disk-pct-0">0%</span>
@@ -404,6 +403,15 @@
         </div>
         <canvas id="AudioCanvas"></canvas>
     </div>
+
+    <!-- Process Table Toggle Button -->
+    <button class="proc-toggle-btn" id="proc-toggle-btn" title="Toggle Process Monitor" style="display: none;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="proc-toggle-icon"
+            viewBox="0 0 16 16">
+            <path fill-rule="evenodd"
+                d="M8 4a.5.5 0 0 1 .5.5v5.793l2.146-2.147a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 1 1 .708-.708L7.5 10.293V4.5A.5.5 0 0 1 8 4" />
+        </svg>
+    </button>
 
     <script src="script.js"></script>
 </body>

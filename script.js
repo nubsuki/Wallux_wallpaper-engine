@@ -182,8 +182,20 @@ function revealDashboard() {
           elem.classList.add("hud-deployed");
         }, idx * 280);
       });
-    }, totalIgnitionTime);
 
+      // Hide the Process Table and reveal the toggle button
+      const postDeployTime = deploymentSequence.length * 280 + 400;
+      setTimeout(() => {
+        if (procWidget) {
+          procWidget.classList.add("proc-hidden");
+        }
+        const procToggleBtn = document.getElementById("proc-toggle-btn");
+        if (procToggleBtn) {
+          procToggleBtn.style.display = "flex";
+          procToggleBtn.classList.remove("active");
+        }
+      }, postDeployTime);
+    }, totalIgnitionTime);
   }, 800);
 }
 
@@ -216,7 +228,15 @@ function connectWebSocket() {
     const clockWidget = document.getElementById("clock-widget");
     if (clockWidget) clockWidget.style.display = "none";
     const procWidget = document.getElementById("process-widget");
-    if (procWidget) procWidget.style.display = "none";
+    if (procWidget) {
+      procWidget.style.display = "none";
+      procWidget.classList.remove("proc-hidden");
+    }
+    const procToggleBtn = document.getElementById("proc-toggle-btn");
+    if (procToggleBtn) {
+      procToggleBtn.style.display = "none";
+      procToggleBtn.classList.remove("active");
+    }
     const healthWidget = document.getElementById("health-widget");
     if (healthWidget) healthWidget.style.display = "none";
     const netWidget = document.getElementById("network-widget");
@@ -766,6 +786,25 @@ document.addEventListener("mousemove", (e) => {
   video.style.transform = `translate(${mouseX * 10}px, ${mouseY * 10}px) scale(1.03)`;
 });
 
+// --- Process Monitor Toggle Handler ---
+function initProcessToggle() {
+  const procToggleBtn = document.getElementById("proc-toggle-btn");
+  const procWidget = document.getElementById("process-widget");
+  if (!procToggleBtn || !procWidget) return;
+
+  procToggleBtn.addEventListener("click", () => {
+    const isHidden = procWidget.classList.contains("proc-hidden");
+    if (isHidden) {
+      procWidget.classList.remove("proc-hidden");
+      procToggleBtn.classList.add("active");
+    } else {
+      procWidget.classList.add("proc-hidden");
+      procToggleBtn.classList.remove("active");
+    }
+  });
+}
+
 // Boot
 initAudioVisualizer();
+initProcessToggle();
 bootSequence();
