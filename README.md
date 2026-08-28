@@ -9,6 +9,13 @@ Wallux V2.0 transforms your desktop into an interactive sci-fi command console, 
 ## Previews
 
 <div align="center">
+  <a href="https://youtu.be/lnRToLpockw">
+    <img src="https://img.youtube.com/vi/lnRToLpockw/maxresdefault.jpg" alt="Wallux Video Showcase" width="100%" />
+  </a>
+  <p><em>▶️ Watch the Video Showcase on YouTube</em></p>
+</div>
+
+<div align="center">
   <img src="preview_1.png" alt="Wallux V2.0 Deployed HUD Layout" width="100%" />
   <p><em>Operational Deployed Layout (Clock, Metrics Stack, Disks, Network & Audio Visualizer)</em></p>
 </div>
@@ -82,3 +89,9 @@ Wallux V2.0 includes native **Wallpaper Engine** customization properties:
 
 - Background Video: [Moewalls](https://moewalls.com/)
 - Hardware Telemetry Engine: [Nekoframe](https://github.com/nubsuki/Nekoframe)
+
+---
+
+## License
+
+This project is for personal use and is distributed "as-is".use at your own risk.
