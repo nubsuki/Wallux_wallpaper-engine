@@ -1353,21 +1353,24 @@ body.no-hud-movement .hud-panel {
 
 #song-info,
 .song-info {
-    position: static !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    gap: 10px !important;
-    margin-bottom: 8px !important;
-    width: 100% !important;
+    position: static;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 8px;
+    width: 100%;
 }
 
 #song-info img,
 .song-info img {
     width: 32px;
     height: 32px;
+    object-fit: cover;
+    object-position: center;
     border-radius: 4px;
     box-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
+    flex-shrink: 0;
 }
 
 #song-info img[src=""],

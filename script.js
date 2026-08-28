@@ -769,10 +769,40 @@ function initAudioVisualizer() {
     window.wallpaperRegisterMediaThumbnailListener((event) => {
       const img = document.getElementById("song-image");
       if (img) {
-        if (event && event.thumbnail) {
-          img.src = event.thumbnail;
+        img.onload = () => {
           img.style.display = "block";
+        };
+        img.onerror = () => {
+          img.removeAttribute("src");
+          img.style.display = "none";
+        };
+
+        if (
+          event &&
+          event.thumbnail &&
+          typeof event.thumbnail === "string" &&
+          event.thumbnail.trim() !== ""
+        ) {
+          img.src = event.thumbnail;
         } else {
+          img.removeAttribute("src");
+          img.style.display = "none";
+        }
+      }
+    });
+
+  window.wallpaperRegisterMediaPlaybackListener &&
+    window.wallpaperRegisterMediaPlaybackListener((event) => {
+      const isStopped =
+        (window.wallpaperMediaIntegration &&
+          event.state === window.wallpaperMediaIntegration.PLAYBACK_STOPPED) ||
+        event.state === 0;
+
+      if (isStopped) {
+        const songInfo = document.getElementById("song-info");
+        const img = document.getElementById("song-image");
+        if (songInfo) songInfo.style.display = "none";
+        if (img) {
           img.removeAttribute("src");
           img.style.display = "none";
         }

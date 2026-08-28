@@ -3,6 +3,7 @@
   "description": "Futuristic System HUD with Nekoframe Realtime system statistics.",
   "file": "index.html",
   "general": {
+    "supportsaudioprocessing": true,
     "properties": {
       "schemecolor": {
         "order": 0,
