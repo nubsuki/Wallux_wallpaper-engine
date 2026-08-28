@@ -79,7 +79,7 @@ Wallux V2.0 includes native **Wallpaper Engine** customization properties:
    - Download the latest release from the [Nekoframe Releases](https://github.com/nubsuki/Nekoframe/releases) page.
    - Run Nekoframe (it will sit quietly in your system tray).
 2. **Download Wallux**:
-   - Subscribe on Wallpaper Engine Workshop: [Wallux on Steam](https://steamcommunity.com/sharedfiles/filedetails/?id=3453056882) or load the project folder into Wallpaper Engine.
+   - Subscribe on Wallpaper Engine Workshop: [Wallux on Steam](https://steamcommunity.com/sharedfiles/filedetails/?id=3791578910) or load the project folder into Wallpaper Engine.
 3. **Launch**:
    - Apply Wallux in Wallpaper Engine. Wallux will automatically establish a local WebSocket connection (`ws://localhost:3069/ws`) with Nekoframe and start streaming live metrics.
 
