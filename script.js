@@ -4,29 +4,21 @@ window.enableHudMovement = true;
 window.wallpaperPropertyListener = {
   applyUserProperties: function (properties) {
     var videoElement = document.getElementById("bg-video");
+    var sourceElement = videoElement ? videoElement.getElementsByTagName("source")[0] : null;
 
-    if (properties.customvideo && properties.customvideo.value) {
-      var path = properties.customvideo.value;
-      if (path && typeof path === "string" && path.trim() !== "") {
-        // Strictly enforce WebM format and reject MP4
-        if (path.toLowerCase().endsWith(".mp4")) {
-          console.warn(
-            "MP4 format is not supported by CEF web engine in Wallpaper Engine. Please select a .webm video.",
-          );
+    if (videoElement && sourceElement) {
+      if (properties.customvideo) {
+        if (properties.customvideo.value) {
+          // User selected a video
+          sourceElement.src = "file:///" + properties.customvideo.value;
         } else {
-          var finalSrc = path;
-          // If absolute Windows path
-          if (/^[a-zA-Z]:[\\/]/.test(path)) {
-            finalSrc = "file:///" + path.replace(/\\/g, "/");
-          }
-          if (videoElement) {
-            videoElement.src = finalSrc;
-            videoElement.load();
-            videoElement.play().catch(function (e) {
-              console.log("Video autoplay error:", e);
-            });
-          }
+          // No video set — use default
+          sourceElement.src = "default.webm";
         }
+        videoElement.load();
+        videoElement.play().catch(function (e) {
+          console.log("Video play caught:", e);
+        });
       }
     }
 
