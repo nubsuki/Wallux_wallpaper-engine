@@ -27,7 +27,7 @@
 				"order" : 100,
 				"text" : "Background Video (.webm only)",
 				"type" : "file",
-				"value" : "miyabi-.webm"
+				"value" : "default.webm"
 			},
 			"enablehudmovement" : 
 			{
