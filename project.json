@@ -1,45 +1,61 @@
 {
-  "contentrating": "Everyone",
-  "description": "Futuristic System HUD with Nekoframe Realtime system statistics.",
-  "file": "index.html",
-  "general": {
-    "supportsaudioprocessing": true,
-    "properties": {
-      "schemecolor": {
-        "order": 0,
-        "text": "ui_browse_properties_scheme_color",
-        "type": "color",
-        "value": "0 0 0"
-      },
-      "customvideo": {
-        "condition": "",
-        "order": 1,
-        "text": "Background Video (.webm only)",
-        "type": "file",
-        "value": "miyabi-.webm"
-      },
-      "enablehudmovement": {
-        "condition": "",
-        "order": 2,
-        "text": "Animate HUD Movement",
-        "type": "bool",
-        "value": true
-      },
-      "audioamplification": {
-        "condition": "",
-        "max": 10,
-        "min": 1,
-        "order": 3,
-        "precision": 1,
-        "step": 0.5,
-        "text": "Audio Visualizer Sensitivity",
-        "type": "slider",
-        "value": 4
-      }
-    }
-  },
-  "preview": "preview_2.png",
-  "title": "Wallux V2.0",
-  "type": "web",
-  "version": 1
+	"contentrating" : "Everyone",
+	"description" : "Futuristic Sci-Fi HUD for Wallpaper Engine with Real-Time Hardware Telemetry, Audio Visualization, and Dynamic Module Deployment.\r\n\r\nSetup:\r\n- NekoFrame is required for full functionality :\r\n- Nekoframe GitHub: https://github.com/nubsuki/Nekoframe\r\n\r\n- installation instructions\r\n- A quick guide : https://youtu.be/lnRToLpockw\r\n\r\n- Tested 1920 x 1080 Display\r\n\r\n\r\nEnjoy a functional and stylish desktop experience!",
+	"file" : "index.html",
+	"general" : 
+	{
+		"properties" : 
+		{
+			"audioamplification" : 
+			{
+				"condition" : "",
+				"index" : 2,
+				"max" : 10,
+				"min" : 1,
+				"order" : 102,
+				"precision" : 1,
+				"step" : 0.5,
+				"text" : "Audio Visualizer Sensitivity",
+				"type" : "slider",
+				"value" : 4
+			},
+			"customvideo" : 
+			{
+				"condition" : "",
+				"fileType" : "video",
+				"index" : 0,
+				"order" : 100,
+				"text" : "Background Video (.webm only)",
+				"type" : "file",
+				"value" : "miyabi-.webm"
+			},
+			"enablehudmovement" : 
+			{
+				"condition" : "",
+				"index" : 1,
+				"order" : 101,
+				"text" : "Animate HUD Movement",
+				"type" : "bool",
+				"value" : true
+			},
+			"schemecolor" : 
+			{
+				"order" : 0,
+				"text" : "ui_browse_properties_scheme_color",
+				"type" : "color",
+				"value" : "0 0 0"
+			}
+		},
+		"supportsaudioprocessing" : true
+	},
+	"preview" : "preview_2.png",
+	"ratingsex" : "none",
+	"ratingviolence" : "none",
+	"tags" : [ "Anime" ],
+	"title" : "Wallux V2.0",
+	"type" : "web",
+	"version" : 3,
+	"visibility" : "public",
+	"workshopid" : "3791578910",
+	"workshopurl" : "steam://url/CommunityFilePage/3791578910"
 }
