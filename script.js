@@ -4,22 +4,28 @@ window.enableHudMovement = true;
 window.wallpaperPropertyListener = {
   applyUserProperties: function (properties) {
     var videoElement = document.getElementById("bg-video");
-    var sourceElement = videoElement ? videoElement.getElementsByTagName("source")[0] : null;
 
-    if (videoElement && sourceElement) {
-      if (properties.customvideo) {
-        if (properties.customvideo.value) {
-          // User selected a video
-          sourceElement.src = "file:///" + properties.customvideo.value;
-        } else {
-          // No video set — use default
-          sourceElement.src = "default.webm";
+    if (videoElement && properties.customvideo) {
+      var customVal = properties.customvideo.value;
+      if (
+        customVal &&
+        customVal !== "default.webm" &&
+        customVal.trim() !== ""
+      ) {
+        // User selected a custom video
+        var videoPath = customVal.replace(/\\/g, "/");
+        if (!videoPath.startsWith("file:///")) {
+          videoPath = "file:///" + videoPath;
         }
-        videoElement.load();
-        videoElement.play().catch(function (e) {
-          console.log("Video play caught:", e);
-        });
+        videoElement.src = videoPath;
+      } else {
+        // No custom video set reset to default
+        videoElement.src = "default.webm";
       }
+      videoElement.load();
+      videoElement.play().catch(function (e) {
+        console.log("Video play caught:", e);
+      });
     }
 
     if (properties.enablehudmovement !== undefined) {
