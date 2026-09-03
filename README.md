@@ -92,6 +92,18 @@ Wallux V2.0 includes native **Wallpaper Engine** customization properties:
 
 ---
 
+## Support & Donations
+
+If you enjoy **Nekoframe** or the **Wallux Wallpaper Engine HUD** and want to support ongoing development, consider buying me a coffee:
+
+<div align="center">
+  <a href="https://buymeacoffee.com/nubsuki">
+    <img src="https://img.shields.io/badge/Buy%20Me%20A%20Coffee-nubsuki-FFDD00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black" alt="Buy Me A Coffee" height="40" />
+  </a>
+</div>
+
+---
+
 ## License
 
 This project is for personal use and is distributed "as-is".use at your own risk.
